@@ -31,7 +31,7 @@ Para entender un poco mejor la sintáxis del lenguaje de programación.
 
 ### Para funciones, declaraciones y condicionales
 
-Al igual que en lenguajes como C, C++, Java, JavaScript, Kotlin, C#, Go, PHP, Rust, etc. Se conservó el uso del ; y para funciones y condicionales se habre el bloque con : y cierra con fin para una estructura más organizada y reconocible a la gramática. 
+Al igual que en lenguajes como C, C++, Java, JavaScript, Kotlin, C#, Go, PHP, Rust, etc. Se conservó el uso del **;** y para funciones y condicionales se habre el bloque con **:** y cierra con **fin** para una estructura más organizada y reconocible a la gramática. 
 
 
 ## 📚 Librerías
