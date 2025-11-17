@@ -1,0 +1,11 @@
+entero x = 5;
+
+fun prueba():
+    entero x = 20;   // debe sombrear a x global
+    mostrar(x);
+fin
+
+mostrar(x);
+prueba();
+mostrar(x);
+

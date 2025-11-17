@@ -1,0 +1,14 @@
+fun suma(a, b):
+    retornar a + b;
+fin
+
+fun cuadrado(x):
+    retornar x * x;
+fin
+
+fun suma_cuadrados(a, b):
+    retornar cuadrado(a) + cuadrado(b);
+fin
+
+mostrar( suma_cuadrados(3, 4) );
+

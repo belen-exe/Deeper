@@ -1,0 +1,13 @@
+entero i = 1;
+
+mientras i <= 5:
+    mostrar(i);
+    i = i + 1;
+fin
+
+lista lista1 = [1, 2, 3, 4];
+
+por x en lista1:
+    mostrar(x * x);
+fin
+

@@ -1,0 +1,16 @@
+entero x = 10;
+decimal y = 2.5;
+
+si x > 5 && y < 3:
+    mostrar("ok");
+sino:
+    mostrar("no");
+fin
+
+fun sumar(a, b):
+    entero c = a + b;
+    retornar c;
+fin
+
+mostrar(sumar(4,6));
+

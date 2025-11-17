@@ -1,0 +1,10 @@
+fun factorial(n):
+    si n == 0:
+        retornar 1;
+    fin
+    
+    retornar n * factorial(n - 1);
+fin
+
+mostrar(factorial(5));
+

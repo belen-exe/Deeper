@@ -1,0 +1,19 @@
+mostrar("Inicio");
+
+// ERROR 1: variable no definida
+mostrar(noexisto);
+
+entero x = 10;
+
+// ERROR 2: operación inválida
+x = x + "hola";
+
+// ERROR 3: funcion con argumentos incorrectos
+fun resta(a, b):
+    retornar a - b;
+fin
+
+resta(5);  // falta un argumento
+
+mostrar("Fin");
+

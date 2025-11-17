@@ -1,0 +1,6 @@
+lista lista1 = [10, 20, 30];
+
+por elem en lista1:
+    mostrar(elem + 1);
+fin
+
