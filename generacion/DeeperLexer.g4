@@ -9,6 +9,8 @@ EN       : 'en';
 FUN      : 'fun';
 RETORNAR : 'retornar';
 FIN      : 'fin';
+IMPORTAR : 'importar';
+COMO     : 'como';
 
 // TIPOS
 ENTERO   : 'entero';
@@ -39,6 +41,7 @@ ASSIGN : '=' ;
 COLON  : ':' ;
 COMMA  : ',' ;
 SEMI   : ';' ;
+DOT    : '.' ;
 
 LPAREN : '(' ;
 RPAREN : ')' ;
@@ -63,4 +66,3 @@ COMMENT : '//' ~[\r\n]* -> skip ;
 
 
 WS : [ \t\r\n]+ -> skip ;
-
