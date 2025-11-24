@@ -1,0 +1,8 @@
+importar StanMath;
+
+mostrar(StanMath.PI);
+mostrar(StanMath.E);
+
+mostrar(StanMath.sin(1.57));
+mostrar(StanMath.cos(0));
+

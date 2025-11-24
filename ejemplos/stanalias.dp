@@ -1,0 +1,26 @@
+importar StanMath como m;
+
+mostrar("PI:", m.PI);
+mostrar("E:", m.E);
+
+mostrar("sin(PI/2) ≈", m.sin(m.PI/2));
+mostrar("cos(PI) ≈", m.cos(m.PI));
+mostrar("tan(0) =", m.tan(0));
+
+mostrar("exp(1) ≈", m.exp(1));
+mostrar("log(E) ≈", m.log(m.E));
+
+mostrar("raiz(25) =", m.raiz(25));
+mostrar("elevado(2,10) =", m.elevado(2,10));   // = 1024
+
+mostrar("comb(5,2) =", m.comb(5,2));
+mostrar("perm(5,3) =", m.perm(5,3));
+mostrar("factorial(6) =", m.factorial(6));
+
+mostrar("min(3,7) =", m.min(3,7));
+mostrar("max(3,7) =", m.max(3,7));
+
+mostrar("abs(-12) =", m.abs(-12));
+mostrar("trunc(3.9) =", m.truncar(3.9));
+
+

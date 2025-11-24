@@ -1,0 +1,12 @@
+lista m = [
+    [10, 20],
+    [30, 40],
+    [50, 60]
+];
+
+por fila en m:
+    por elem en fila:
+        mostrar(elem);
+    fin
+fin
+

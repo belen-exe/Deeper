@@ -1,0 +1,10 @@
+diccionario usuario = {
+    "nombre": "Carlos",
+    "info": {
+        "ciudad": "Bogota",
+        "edad": 30
+    }
+};
+
+mostrar(usuario["info"]["ciudad"]);   // Bogota
+

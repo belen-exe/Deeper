@@ -1,0 +1,8 @@
+diccionario persona = {
+    "nombre": "Belen",
+    "edad": 21
+};
+
+mostrar(persona["nombre"]);  // Belen
+mostrar(persona["edad"]);    // 21
+
