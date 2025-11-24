@@ -16,6 +16,7 @@ instruccion
     | retornar
     | condicion
     | bucle_mientras
+    | importar_stmt SEMI
     | bucle_por
     | definicion_funcion
     ;
@@ -123,6 +124,17 @@ unaryExpr
     ;
 
 atom
+    : primary atomSuffix*
+    ;
+
+// obj.x
+atomSuffix
+    : DOT ID
+    | DOT llamada_funcion
+    | LBRACK expr RBRACK
+    ;
+    
+primary
     : NUMBER
     | STRING
     | BOOL_LIT
@@ -146,8 +158,11 @@ diccionario
 clave_valor
     : STRING COLON expr
     ;
-
-matriz
-    : LBRACK lista (COMMA lista)* RBRACK
+    
+importar_stmt
+    : IMPORTAR ID (COMO ID)?
     ;
 
+matriz
+    : LBRACK (lista (COMMA lista)*)? RBRACK
+    ;
