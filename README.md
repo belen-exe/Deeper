@@ -1,6 +1,6 @@
 # Deeper - Lenguaje de programación
 
-Deeper es un lenguaje de programación pensado como un DSL (Lenguaje para un dominio específico) enfocado para correr desde operaciones aritméticas básicas, funciones, condicionales, bucles, expresiones, (); hasta su objetico principal: Deep Learning. Diseñado con ANTLR4 + Python y pensado en su visualización como PSeInt sin quitar la sencillez de Python.
+Deeper es un lenguaje de programación pensado como un DSL (Lenguaje para un dominio específico) enfocado para correr desde operaciones aritméticas básicas, funciones, condicionales, bucles, expresiones, importación de librerias, carga de archivos, etc; hasta su objetico principal: Deep Learning. Diseñado con ANTLR4 + Python y pensado en su visualización como PSeInt sin quitar la sencillez de Python.
 
 >[!IMPORTANT]
 > ***Elaborado por:** Laura Sophia Hernández, Angie Lorena López y María Belén Peña*
