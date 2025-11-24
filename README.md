@@ -28,6 +28,8 @@ Para entender un poco mejor la sintáxis del lenguaje de programación.
 - LIST     : 'lista';
 - DICC     : 'diccionario';
 - MATRIZ   : 'matriz';
+- IMPORT   : 'importar';
+- AS       : 'como';
 
 ### Para funciones, declaraciones y condicionales
 
@@ -36,4 +38,17 @@ Al igual que en lenguajes como C, C++, Java, JavaScript, Kotlin, C#, Go, PHP, Ru
 
 ## 📚 Librerías
 
-Si algún día se hacen :P
+### StanMath
+
+Librería de math implementada en Deeper como 'StanMath' con o sin alias es posible.
+
+- truncar(x)
+- exp(x) → e^x 
+- log(x) → log natural 
+- log10(x) → log base 10 
+- log2(x) → log base 2 
+- pow(x, y) → potencia 
+- trigonometria (sin, cos, tan, asin, acos, atan)
+- conversion de ángulos (radinaes, grados)
+- funciones combinatorias (factorial, combinación, permutación)
+- constantes (pi, e, tau)
