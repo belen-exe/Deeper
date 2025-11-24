@@ -2,6 +2,7 @@ from generacion.DeeperParserVisitor import DeeperParserVisitor
 from runtime.excepciones import DeeperError, RetornarValor
 from runtime.retorno import Entorno
 from runtime.mostrar import BUILTINS
+from librerias.archivos import leer_archivo, escribir_archivo
 
 
 class FuncionDefinida:
@@ -24,6 +25,9 @@ class MiVisitor(DeeperParserVisitor):
         # registrar funciones builtin
         for nombre, fun in BUILTINS.items():
             self.global_entorno.definir(nombre, fun)
+
+        self.global_entorno.definir("leer_archivo", leer_archivo)
+        self.global_entorno.definir("escribir_archivo", escribir_archivo)
 
     def entorno_actual(self):
         """Retorna el entorno de la capa actual."""
@@ -78,18 +82,22 @@ class MiVisitor(DeeperParserVisitor):
         return None
 
     def visitLlamada_funcion(self, ctx):
-        nombre = ctx.ID().getText()
-        args = [self.visit(e) for e in ctx.argumentos().expr()] if ctx.argumentos() else []
+        nombre = ctx.ID().getText()        # aquí SÍ debe existir ID
+        args = []
+
+        if ctx.argumentos():
+            args = [self.visit(e) for e in ctx.argumentos().expr()]
 
         fun = self.entorno_actual().obtener(nombre)
+
+        # Si tu lenguaje tiene funciones definidas por el usuario:
+        if isinstance(fun, FuncionDefinida):
+            return self._invocar_funcion_definida(fun, args)
 
         if callable(fun):
             return fun(*args)
 
-        if isinstance(fun, FuncionDefinida):
-            return self.ejecutar_funcion(fun, args)
-
-        raise DeeperError(f"'{nombre}' no es una función válida.")
+        raise DeeperError(f"'{nombre}' no es una función")
 
     # SI/SINO
     def visitCondicion(self, ctx):
@@ -247,15 +255,107 @@ class MiVisitor(DeeperParserVisitor):
         return self.visit(ctx.atom())
 
     def visitAtom(self, ctx):
+        # 1. Evaluar el 'primary': ID, literal, (expr), lista, etc.
+        valor = self.visit(ctx.primary())
+
+        # 2. Aplicar los sufijos en orden: .prop, .metodo(...), [idx], etc.
+        for suf in ctx.atomSuffix():
+            # ------- Acceso / método con punto -------
+            if suf.DOT():
+                call = suf.llamada_funcion()
+
+                if call is not None:
+                    # caso: obj.metodo(...)
+                    # aquí el nombre está dentro de llamada_funcion: ID LPAREN ...
+                    nombre = call.ID().getText()
+
+                    args = []
+                    if call.argumentos():
+                        args = [self.visit(e) for e in call.argumentos().expr()]
+
+                    try:
+                        fun = getattr(valor, nombre)
+                    except AttributeError:
+                        raise DeeperError(f"El módulo/objeto no tiene la función '{nombre}'")
+
+                    valor = fun(*args)
+
+                else:
+                    # caso: obj.prop   (atomSuffix: DOT ID)
+                    nombre = suf.ID().getText()
+                    try:
+                        valor = getattr(valor, nombre)
+                    except AttributeError:
+                        raise DeeperError(f"El módulo/objeto no tiene '{nombre}'")
+
+            # ------- Indexación obj[x] -------
+            elif suf.LBRACK():
+                idx = self.visit(suf.expr())
+                try:
+                    valor = valor[idx]
+                except Exception:
+                    raise DeeperError("Error al indexar el objeto")
+
+        return valor
+
+
+
+    
+    def visitPrimary(self, ctx):
         if ctx.NUMBER():
             t = ctx.NUMBER().getText()
-            return float(t) if "." in t else int(t)
+            return float(t) if '.' in t else int(t)
+
         if ctx.STRING():
             return ctx.STRING().getText().strip('"')
+
         if ctx.BOOL_LIT():
             return ctx.BOOL_LIT().getText() == "verdadero"
+
         if ctx.ID():
             return self.entorno_actual().obtener(ctx.ID().getText())
-        if ctx.LPAREN():
+
+        if ctx.llamada_funcion():
+            return self.visit(ctx.llamada_funcion())
+
+        if ctx.lista():
+            return self.visit(ctx.lista())
+
+        if ctx.diccionario():
+            return self.visit(ctx.diccionario())
+
+        if ctx.matriz():
+            return self.visit(ctx.matriz())
+
+        # (expr)
+        if ctx.expr():
             return self.visit(ctx.expr())
-        return self.visitChildren(ctx)
+
+        raise DeeperError("Expresión primaria inválida.")
+    
+    #para librerias
+    def visitImportar_stmt(self, ctx):
+        modulo = ctx.ID(0).getText()
+        alias = modulo
+
+        # manejar 'importar StanMath como m;'
+        if ctx.ID(1) is not None:
+            alias = ctx.ID(1).getText()
+
+        try:
+            # Importa el módulo Python: librerias.StanMath, librerias.archivos, etc.
+            py_module = __import__(f"librerias.{modulo}", fromlist=[modulo])
+        except Exception:
+            raise DeeperError(f"No se pudo cargar el módulo '{modulo}'.")
+
+        # Si dentro del módulo existe un atributo con el mismo nombre que el módulo
+        # (ej. en librerias/StanMath.py hay una clase StanMath),
+        # usamos esa clase. Si no, usamos el módulo completo.
+        obj = getattr(py_module, modulo, py_module)
+
+        # Guardamos directamente el objeto (clase o módulo) bajo el alias.
+        # Así, desde Deeper podrás hacer:
+        #   importar StanMath;
+        #   mostrar(StanMath.PI);
+        self.entorno_actual().definir(alias, obj)
+
