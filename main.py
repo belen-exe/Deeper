@@ -1,4 +1,3 @@
-# main.py
 from antlr4 import FileStream, CommonTokenStream
 from antlr4.error.ErrorListener import ErrorListener
 from generacion.DeeperLexer import DeeperLexer
