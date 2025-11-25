@@ -18,6 +18,20 @@ class StanMath:
     def _abs(x):
         return x if x >= 0 else -x
 
+        # ---------- módulo ----------
+    @staticmethod
+    def mod(a, b):
+        if b == 0:
+            raise ValueError("mod: el divisor no puede ser cero")
+
+        # Permitir flotantes que representen enteros
+        if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+            raise ValueError("mod: los valores deben ser numéricos")
+
+        # Implementación consistente con Python
+        return a % b
+
+
     @staticmethod
     def _normalize_angle(x):
         k = int(x / StanMath.TAU)
