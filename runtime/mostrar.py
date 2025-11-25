@@ -2,22 +2,36 @@ from runtime.excepciones import DeeperError
 from librerias.StanMath import StanMath
 
 def normalizar_valor(v):
-    # Normalizar booleanos
+    # booleanos
     if v is True:
         return "verdadero"
     if v is False:
         return "falso"
 
-    # Normalizar listas, matrices, diccionarios recursivamente
-    if isinstance(v, list):
-        return "[" + ", ".join(normalizar_valor(x) for x in v) + "]"
-    if isinstance(v, dict):
-        partes = []
-        for k, val in v.items():
-            partes.append(f'"{k}": {normalizar_valor(val)}')
-        return "{" + ", ".join(partes) + "}"
+    # None
+    if v is None:
+        return "nulo"
 
-    return v
+    # número o string
+    if isinstance(v, (int, float, str)):
+        return str(v)
+
+    # lista simple o matriz
+    if isinstance(v, list):
+        elementos = []
+        for x in v:
+            elementos.append(normalizar_valor(x))
+        return "[" + ", ".join(elementos) + "]"
+
+    # diccionario
+    if isinstance(v, dict):
+        elementos = []
+        for k, val in v.items():
+            elementos.append(f'"{k}": {normalizar_valor(val)}')
+        return "{" + ", ".join(elementos) + "}"
+
+    # fallback
+    return str(v)
 
 
 def builtin_mostrar(*args):
