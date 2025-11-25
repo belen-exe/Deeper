@@ -22,5 +22,7 @@ mostrar("max(3,7) =", m.max(3,7));
 
 mostrar("abs(-12) =", m.abs(-12));
 mostrar("trunc(3.9) =", m.truncar(3.9));
+mostrar("mod(2,3)=", m.mod(2,3));
+
 
 
