@@ -1,4 +1,5 @@
 from runtime.excepciones import DeeperError
+from librerias.StanMath import StanMath
 
 def normalizar_valor(v):
     # Normalizar booleanos
@@ -25,5 +26,44 @@ def builtin_mostrar(*args):
 
 
 BUILTINS = {
-    "mostrar": builtin_mostrar
+    # Output
+    "mostrar": builtin_mostrar,
+
+    # Básicos
+    "abs": StanMath.abs,
+    "truncar": StanMath.truncar,
+
+    # Aritmética
+    "elevado": StanMath.elevado,
+    "exp": StanMath.exp,
+    "log": StanMath.log,
+    "log10": StanMath.log10,
+    "log2": StanMath.log2,
+    "raiz": StanMath.raiz,
+
+    # Trigonometría
+    "sin": StanMath.sin,
+    "cos": StanMath.cos,
+    "tan": StanMath.tan,
+
+    # Trigonometría inversa
+    "asin": StanMath.asin,
+    "acos": StanMath.acos,
+    "atan": StanMath.atan,
+
+    # Conversión ángulos
+    "grados": StanMath.grados,
+    "radianes": StanMath.radianes,
+
+    # Combinatoria
+    "factorial": StanMath.factorial,
+    "comb": StanMath.comb,
+    "perm": StanMath.perm,
+
+    # Mínimo y máximo
+    "min": StanMath.min,
+    "max": StanMath.max,
+
+    # NUEVA función módulo
+    "mod": StanMath.mod
 }
