@@ -1,0 +1,17 @@
+lista x = [1, 2, 3, 4, 5];
+lista y = [2, 4, 1, 8, 5];
+
+crear_lineas(x, y, "Crecimiento", "Tiempo", "Valor");
+color_linea(150, 20, 20);
+color_puntos(10, 10, 200);
+titulo("Gráfica de Lineas");
+guardar("lineas.svg");
+
+// Ahora barras:
+lista categorias = ["A", "B", "C", "D", "E"];
+lista valores = [20, 10, 30, 15, 8];
+
+crear_barras(categorias, valores, "Ventas", "Producto", "Cantidad");
+color_barras(50, 100, 200);
+guardar("barras.svg");
+
