@@ -1,3 +1,4 @@
+from librerias.StanPlot import DeeperPlotInterpreter
 from generacion.DeeperParserVisitor import DeeperParserVisitor
 from runtime.excepciones import DeeperError, RetornarValor
 from runtime.retorno import Entorno
@@ -28,6 +29,24 @@ class MiVisitor(DeeperParserVisitor):
 
         self.global_entorno.definir("leer_archivo", leer_archivo)
         self.global_entorno.definir("escribir_archivo", escribir_archivo)
+                # >>> Registrar funciones de graficación <<<
+        plot = DeeperPlotInterpreter()  # instancia
+
+        self.global_entorno.definir("crear_lineas", plot.crear_lineas)
+        self.global_entorno.definir("crear_barras", plot.crear_barras)
+        self.global_entorno.definir("crear_dispersion", plot.crear_dispersion)
+        self.global_entorno.definir("crear_pastel", plot.crear_pastel)
+        self.global_entorno.definir("crear_histograma", plot.crear_histograma)
+        self.global_entorno.definir("crear_area", plot.crear_area)
+
+        self.global_entorno.definir("color_linea", plot.color_linea)
+        self.global_entorno.definir("color_puntos", plot.color_puntos)
+        self.global_entorno.definir("color_barras", plot.color_barras)
+        self.global_entorno.definir("color_fondo", plot.color_fondo)
+
+        self.global_entorno.definir("titulo", plot.titulo)
+        self.global_entorno.definir("guardar", plot.guardar)
+        
 
     def entorno_actual(self):
         """Retorna el entorno de la capa actual."""
