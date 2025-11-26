@@ -13,13 +13,14 @@ IMPORTAR : 'importar';
 COMO     : 'como';
 
 // TIPOS
-ENTERO   : 'entero';
-DECIMAL  : 'decimal';
-BOOL_T   : 'bool';
-CADENA_T : 'cadena';
-LISTA_T  : 'lista';
-DICC_T   : 'diccionario';
-MATRIZ_T : 'matriz';
+ENTERO     : 'entero';
+DECIMAL    : 'decimal';
+BOOL_T     : 'bool';
+CADENA_T   : 'cadena';
+LISTA_T    : 'lista';
+DICC_T     : 'diccionario';
+MATRIZ_T   : 'matriz';
+DATAFRAME_T: 'dataframe';  // <- NUEVO TIPO
 
 // LITERALES
 BOOL_LIT : 'verdadero' | 'falso';
@@ -63,6 +64,5 @@ NOT : '!' ;
 
 // Comentarios tipo //
 COMMENT : '//' ~[\r\n]* -> skip ;
-
 
 WS : [ \t\r\n]+ -> skip ;
