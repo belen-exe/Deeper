@@ -4,7 +4,7 @@ from runtime.excepciones import DeeperError, RetornarValor
 from runtime.retorno import Entorno
 from runtime.mostrar import BUILTINS
 from librerias.archivos import leer_archivo, escribir_archivo
-
+from librerias.StanRegression import regresion_pendiente, regresion_intercepto, predecir
 
 class FuncionDefinida:
     def __init__(self, nombre, parametros, cuerpo, entorno_def):
@@ -46,7 +46,10 @@ class MiVisitor(DeeperParserVisitor):
 
         self.global_entorno.definir("titulo", plot.titulo)
         self.global_entorno.definir("guardar", plot.guardar)
-        
+
+        self.global_entorno.definir("regresion_pendiente", regresion_pendiente)
+        self.global_entorno.definir("regresion_intercepto", regresion_intercepto)
+        self.global_entorno.definir("predecir", predecir)
 
     def entorno_actual(self):
         """Retorna el entorno de la capa actual."""
