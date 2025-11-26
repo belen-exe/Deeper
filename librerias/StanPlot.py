@@ -1,34 +1,6 @@
-# librerias/StanPlot.py
-# Implementación completa de la librería de gráficas para Deeper
-# - No depende de módulos externos como math
-# - Usa únicamente StanMath para operaciones numéricas complejas
-# - Produce archivos .svg (vectoriales) directamente
-#
-# API expuesta (métodos de DeeperPlotInterpreter):
-#   crear_lineas(datos_x, datos_y, titulo="", eje_x="", eje_y="")
-#   crear_barras(categorias, valores, titulo="", eje_x="", eje_y="")
-#   crear_dispersion(datos_x, datos_y, titulo="", eje_x="", eje_y="")
-#   crear_pastel(valores, etiquetas, titulo="")
-#   crear_histograma(datos, num_bins, titulo="", eje_x="", eje_y="")
-#   crear_area(datos_x, datos_y, titulo="", eje_x="", eje_y="")
-#   nuevo_canvas(ancho, alto)
-#   color_fondo(r,g,b)
-#   color_linea(r,g,b)
-#   color_barras(r,g,b)
-#   color_puntos(r,g,b)
-#   tamano_puntos(t)
-#   grosor_linea(g)
-#   titulo(texto)
-#   guardar(ruta_svg)
-#
-# Nota: Las "listas" y "matrices" vienen desde el intérprete Deeper como estructuras de Python;
-# aquí las usamos tal cual (no importamos librerías externas).
-
 from librerias.StanMath import StanMath
+from librerias.StanRegression import regresion_pendiente, regresion_intercepto, predecir
 
-# -----------------------
-# Utilidades internas
-# -----------------------
 def _rgb_to_str(rgb):
     # rgb es una tupla (r,g,b) con valores 0-255
     try:
@@ -48,9 +20,6 @@ def _fmt_num(x):
     except Exception:
         return str(x)
 
-# -----------------------
-# Clases internas
-# -----------------------
 class Punto:
     def __init__(self, x, y):
         self.x = x
@@ -118,9 +87,6 @@ class Grafica:
         py = (1.0 - pad) * h - ((y - self.min_y) / dy) * (h * (1.0 - 2.0 * pad))
         return Punto(px, py)
 
-# -----------------------
-# Helpers de creación
-# -----------------------
 def crear_grafica_lineas(xs, ys, titulo="", ex="", ey=""):
     g = Grafica(titulo, ex, ey)
     datos = list(zip(xs, ys))
@@ -214,9 +180,6 @@ def guardar_grafica(grafica, ruta):
     with open(ruta, "w", encoding="utf-8") as f:
         f.write(svg)
 
-# -----------------------
-# Intérprete público
-# -----------------------
 class DeeperPlotInterpreter:
     def __init__(self):
         self.current_graph = None
@@ -358,14 +321,27 @@ class DeeperPlotInterpreter:
         if not self.current_graph:
             raise Exception("No hay ninguna gráfica para guardar")
         guardar_grafica(self.current_graph, nombre_archivo)
+        
+    def crear_regresion(self, datos_x, datos_y, titulo="", eje_x="", eje_y=""):
+        # 1) calculamos m y b
+        m = regresion_pendiente(datos_x, datos_y)
+        b = regresion_intercepto(datos_x, datos_y)
 
-# Si se ejecuta directamente, pequeño test (no se ejecuta desde Deeper)
-if __name__ == "__main__":
-    dp = DeeperPlotInterpreter()
-    x = [1,2,3,4,5]
-    y = [2,4,1,8,5]
-    dp.crear_lineas(x, y, "Test", "X", "Y")
-    dp.color_linea(200,50,50)
-    dp.color_puntos(20,80,200)
-    dp.guardar("test_grafica.svg")
+        # 2) calculamos valores predichos
+        pred_y = predecir(datos_x, m, b)
 
+        # 3) dibujamos puntos originales
+        g = crear_grafica_dispersion(datos_x, datos_y, titulo, eje_x, eje_y)
+
+        # 4) dibujamos la línea encima
+        linea = crear_grafica_lineas(datos_x, pred_y, titulo, eje_x, eje_y)
+
+        # copiar estilos si ya había una gráfica previa
+        if self.current_graph:
+            linea.color_linea = self.current_graph.color_linea
+            linea.color_puntos = self.current_graph.color_puntos
+            linea.grosor = self.current_graph.grosor
+            linea.tamano_punto = self.current_graph.tamano_punto
+
+        self.current_graph = linea
+        return linea
