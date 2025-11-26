@@ -18,7 +18,6 @@ def __sum_cuadrados(xs):
         total += v * v
     return total
 
-# --------- Pendiente (m) ----------
 def regresion_pendiente(xs, ys):
     n = len(xs)
     if n == 0:
@@ -35,7 +34,7 @@ def regresion_pendiente(xs, ys):
     if den == 0:
         raise Exception("No se puede calcular pendiente, división por cero")
 
-    return StanMath.div(num, den)
+    return num / den  # <<< CORRECCIÓN
 
 def regresion_intercepto(xs, ys):
     m = regresion_pendiente(xs, ys)
@@ -44,7 +43,7 @@ def regresion_intercepto(xs, ys):
     sx = __sum(xs)
     sy = __sum(ys)
 
-    return StanMath.div(sy - m * sx, n)
+    return (sy - m * sx) / n
 
 def predecir(xs, m, b):
     res = []
