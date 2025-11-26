@@ -43,6 +43,7 @@ class MiVisitor(DeeperParserVisitor):
         self.global_entorno.definir("color_puntos", plot.color_puntos)
         self.global_entorno.definir("color_barras", plot.color_barras)
         self.global_entorno.definir("color_fondo", plot.color_fondo)
+        self.global_entorno.definir("crear_regresion", plot.crear_regresion)
 
         self.global_entorno.definir("titulo", plot.titulo)
         self.global_entorno.definir("guardar", plot.guardar)
@@ -380,4 +381,3 @@ class MiVisitor(DeeperParserVisitor):
         #   importar StanMath;
         #   mostrar(StanMath.PI);
         self.entorno_actual().definir(alias, obj)
-
