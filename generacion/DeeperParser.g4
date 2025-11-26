@@ -8,11 +8,10 @@ programa
     ;
 
 // INSTRUCCIÓN
-
 instruccion
     : declaracion_variable SEMI
     | asignacion SEMI
-    | llamada_funcion SEMI
+    | expr SEMI
     | retornar
     | condicion
     | bucle_mientras
@@ -43,10 +42,10 @@ tipo
     | LISTA_T
     | DICC_T
     | MATRIZ_T
+    | DATAFRAME_T    // <- NUEVO TIPO
     ;
 
 // FUNCIONES
-
 definicion_funcion
     : FUN ID LPAREN parametros? RPAREN COLON
       (instruccion)*
@@ -127,7 +126,7 @@ atom
     : primary atomSuffix*
     ;
 
-// obj.x
+// obj.x, obj.metodo(), obj[idx]
 atomSuffix
     : DOT ID
     | DOT llamada_funcion
