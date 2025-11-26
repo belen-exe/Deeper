@@ -1,10 +1,8 @@
-from librerias.StanPlot import DeeperPlotInterpreter
 from generacion.DeeperParserVisitor import DeeperParserVisitor
 from runtime.excepciones import DeeperError, RetornarValor
 from runtime.retorno import Entorno
 from runtime.mostrar import BUILTINS
 from librerias.archivos import leer_archivo, escribir_archivo
-from librerias.StanRegression import regresion_pendiente, regresion_intercepto, predecir
 
 class FuncionDefinida:
     def __init__(self, nombre, parametros, cuerpo, entorno_def):
@@ -23,31 +21,16 @@ class MiVisitor(DeeperParserVisitor):
         # stack de entornos, iniciamos con el global
         self.entornos = [self.global_entorno]
 
-        # registrar funciones builtin
+        # registrar funciones builtin (mostrar, etc.)
         for nombre, fun in BUILTINS.items():
             self.global_entorno.definir(nombre, fun)
 
+        # Funciones de archivos (NO son una librería, van en builtins)
         self.global_entorno.definir("leer_archivo", leer_archivo)
         self.global_entorno.definir("escribir_archivo", escribir_archivo)
-                # >>> Registrar funciones de graficación <<<
-        plot = DeeperPlotInterpreter()  # instancia
 
-        self.global_entorno.definir("crear_lineas", plot.crear_lineas)
-        self.global_entorno.definir("crear_barras", plot.crear_barras)
-        self.global_entorno.definir("crear_dispersion", plot.crear_dispersion)
-
-        self.global_entorno.definir("color_linea", plot.color_linea)
-        self.global_entorno.definir("color_puntos", plot.color_puntos)
-        self.global_entorno.definir("color_barras", plot.color_barras)
-        self.global_entorno.definir("color_fondo", plot.color_fondo)
-        self.global_entorno.definir("crear_regresion", plot.crear_regresion)
-
-        self.global_entorno.definir("titulo", plot.titulo)
-        self.global_entorno.definir("guardar", plot.guardar)
-
-        self.global_entorno.definir("regresion_pendiente", regresion_pendiente)
-        self.global_entorno.definir("regresion_intercepto", regresion_intercepto)
-        self.global_entorno.definir("predecir", predecir)
+        # NO registrar librerías aquí - deben importarse con "importar"
+        # Las librerías son: StanMath, StanPlot, NumStan, patos, etc.
 
     def entorno_actual(self):
         """Retorna el entorno de la capa actual."""
@@ -80,9 +63,9 @@ class MiVisitor(DeeperParserVisitor):
 
     def ejecutar_funcion(self, f, args):
         if len(args) != len(f.parametros):
-            raise DeeperError(f"La función '{f.nombre}' esperaba {len(f.parametros)} argumentos.")
+            raise DeeperError(f"La función '{f.nombre}' esperaba {len(f.parametros)} argumentos, pero recibió {len(args)}.")
 
-        # crear ambiente local con el entorno donde se definió
+        # crear ambiente local con el entorno donde se definió (closure)
         entorno_local = Entorno(f.entorno_def)
 
         self.entornos.append(entorno_local)
@@ -102,7 +85,7 @@ class MiVisitor(DeeperParserVisitor):
         return None
 
     def visitLlamada_funcion(self, ctx):
-        nombre = ctx.ID().getText()        # aquí SÍ debe existir ID
+        nombre = ctx.ID().getText()
         args = []
 
         if ctx.argumentos():
@@ -110,10 +93,11 @@ class MiVisitor(DeeperParserVisitor):
 
         fun = self.entorno_actual().obtener(nombre)
 
-        # Si tu lenguaje tiene funciones definidas por el usuario:
+        # Si es función definida por el usuario
         if isinstance(fun, FuncionDefinida):
-            return self._invocar_funcion_definida(fun, args)
+            return self.ejecutar_funcion(fun, args)
 
+        # Si es función builtin (callable de Python)
         if callable(fun):
             return fun(*args)
 
@@ -192,7 +176,6 @@ class MiVisitor(DeeperParserVisitor):
     def visitMatriz(self, ctx):
         listas = ctx.lista()
         return [self.visit(l) for l in listas]
-
 
     # RETURN
     def visitRetornar(self, ctx):
@@ -280,12 +263,12 @@ class MiVisitor(DeeperParserVisitor):
 
         # 2. Aplicar los sufijos en orden: .prop, .metodo(...), [idx], etc.
         for suf in ctx.atomSuffix():
+            # ------- Acceso / método con punto -------
             if suf.DOT():
                 call = suf.llamada_funcion()
 
                 if call is not None:
                     # caso: obj.metodo(...)
-                    # aquí el nombre está dentro de llamada_funcion: ID LPAREN ...
                     nombre = call.ID().getText()
 
                     args = []
@@ -316,7 +299,7 @@ class MiVisitor(DeeperParserVisitor):
                     raise DeeperError("Error al indexar el objeto")
 
         return valor
-    
+
     def visitPrimary(self, ctx):
         if ctx.NUMBER():
             t = ctx.NUMBER().getText()
@@ -349,7 +332,7 @@ class MiVisitor(DeeperParserVisitor):
 
         raise DeeperError("Expresión primaria inválida.")
     
-    #para librerias
+    # IMPORTAR - para librerías
     def visitImportar_stmt(self, ctx):
         modulo = ctx.ID(0).getText()
         alias = modulo
@@ -359,11 +342,15 @@ class MiVisitor(DeeperParserVisitor):
             alias = ctx.ID(1).getText()
 
         try:
-            # Importa el módulo Python: librerias.StanMath, librerias.archivos, etc.
+            # Importa el módulo Python: librerias.StanMath, librerias.patos, etc.
             py_module = __import__(f"librerias.{modulo}", fromlist=[modulo])
-        except Exception:
-            raise DeeperError(f"No se pudo cargar el módulo '{modulo}'.")
-            
+        except Exception as e:
+            raise DeeperError(f"No se pudo cargar el módulo '{modulo}': {e}")
+
+        # Si dentro del módulo existe una clase con el mismo nombre que el módulo
+        # (ej. en librerias/StanMath.py hay una clase StanMath),
+        # usamos esa clase. Si no, usamos el módulo completo.
         obj = getattr(py_module, modulo, py_module)
 
+        # Guardamos el objeto (clase o módulo) bajo el alias
         self.entorno_actual().definir(alias, obj)
