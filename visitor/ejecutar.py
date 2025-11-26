@@ -35,9 +35,6 @@ class MiVisitor(DeeperParserVisitor):
         self.global_entorno.definir("crear_lineas", plot.crear_lineas)
         self.global_entorno.definir("crear_barras", plot.crear_barras)
         self.global_entorno.definir("crear_dispersion", plot.crear_dispersion)
-        self.global_entorno.definir("crear_pastel", plot.crear_pastel)
-        self.global_entorno.definir("crear_histograma", plot.crear_histograma)
-        self.global_entorno.definir("crear_area", plot.crear_area)
 
         self.global_entorno.definir("color_linea", plot.color_linea)
         self.global_entorno.definir("color_puntos", plot.color_puntos)
@@ -283,7 +280,6 @@ class MiVisitor(DeeperParserVisitor):
 
         # 2. Aplicar los sufijos en orden: .prop, .metodo(...), [idx], etc.
         for suf in ctx.atomSuffix():
-            # ------- Acceso / método con punto -------
             if suf.DOT():
                 call = suf.llamada_funcion()
 
@@ -320,9 +316,6 @@ class MiVisitor(DeeperParserVisitor):
                     raise DeeperError("Error al indexar el objeto")
 
         return valor
-
-
-
     
     def visitPrimary(self, ctx):
         if ctx.NUMBER():
@@ -370,14 +363,7 @@ class MiVisitor(DeeperParserVisitor):
             py_module = __import__(f"librerias.{modulo}", fromlist=[modulo])
         except Exception:
             raise DeeperError(f"No se pudo cargar el módulo '{modulo}'.")
-
-        # Si dentro del módulo existe un atributo con el mismo nombre que el módulo
-        # (ej. en librerias/StanMath.py hay una clase StanMath),
-        # usamos esa clase. Si no, usamos el módulo completo.
+            
         obj = getattr(py_module, modulo, py_module)
 
-        # Guardamos directamente el objeto (clase o módulo) bajo el alias.
-        # Así, desde Deeper podrás hacer:
-        #   importar StanMath;
-        #   mostrar(StanMath.PI);
         self.entorno_actual().definir(alias, obj)
