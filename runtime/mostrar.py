@@ -84,6 +84,6 @@ BUILTINS = {
     "min": StanMath.min,
     "max": StanMath.max,
 
-    # NUEVA función módulo
+    # Módulo
     "mod": StanMath.mod
 }
