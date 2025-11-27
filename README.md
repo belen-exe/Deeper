@@ -46,21 +46,6 @@ Al igual que en lenguajes como C, C++, Java, JavaScript, Kotlin, C#, Go, PHP, Ru
 | **`ejemplos/`**                                                  | Archivos de ejemplo escritos en la sintaxis Deeper (`*.dp`), para demostrar uso de librerías, gráficos, regresión, etc. ([GitHub][1])                                                                                                                                                             |
 | **`main.py` / `repl.py`**                                        | Punto de entrada del intérprete: recibe un archivo `.dp`, lo parsea, ejecuta con el visitor; también puede ofrecer un REPL interactivo. ([GitHub][1])                                                                                                                                             |
 
-## Librerías
-
-Librería de math implementada en Deeper como 'StanMath' con o sin alias es posible.
-
-- truncar(x)
-- exp(x) → e^x 
-- log(x) → log natural 
-- log10(x) → log base 10 
-- log2(x) → log base 2 
-- pow(x, y) → potencia 
-- trigonometria (sin, cos, tan, asin, acos, atan)
-- conversion de ángulos (radinaes, grados)
-- funciones combinatorias (factorial, combinación, permutación)
-- constantes (pi, e, tau)
-
 ## Estructura de las librerías en Deeper
 
 Cada archivo dentro de librerias/ actúa como un módulo Python que el intérprete puede importar desde Deeper, usando:
