@@ -1,13 +1,13 @@
-importar StanRegression como R;
+importar StanLearn como sl;
 
 lista x = [1, 2, 3, 4, 5];
 lista y = [1, 3, 2, 5, 4];
 
-decimal m = R.regresion_pendiente(x, y);
-decimal b = R.regresion_intercepto(x, y);
+decimal m = sl.regresion_pendiente(x, y);
+decimal b = sl.regresion_intercepto(x, y);
 
 mostrar("pendiente m =", m);
 mostrar("intercepto b =", b);
 
-lista pred = R.predecir(x, m, b);
+lista pred = sl.predecir(x, m, b);
 mostrar("predicciones =", pred);
