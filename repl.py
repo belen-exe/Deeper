@@ -1,5 +1,5 @@
 # repl.py
-import readline   # habilita historial con ↑
+import readline
 from antlr4 import InputStream, CommonTokenStream
 from generacion.DeeperLexer import DeeperLexer
 from generacion.DeeperParser import DeeperParser
@@ -14,7 +14,6 @@ def ejecutar_codigo(codigo, visitor):
         parser = DeeperParser(tokens)
 
         parser.removeErrorListeners()
-        # podrías agregar tu listener si quieres
         tree = parser.programa()
 
         return visitor.visit(tree)
