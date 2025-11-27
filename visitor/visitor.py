@@ -1,6 +1,6 @@
 from generacion.DeeperParserVisitor import DeeperParserVisitor
 from runtime.excepciones import DeeperError, RetornarValor
-from runtime.retorno import Entorno
+from runtime.entorno import Entorno
 from runtime.mostrar import BUILTINS
 from librerias.archivos import leer_archivo, escribir_archivo
 
