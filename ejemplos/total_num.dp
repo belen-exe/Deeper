@@ -1,0 +1,244 @@
+importar patos;
+importar NumStan;
+importar StanPlot;
+
+mostrar("TUTORIAL DE NUMSTAN (ESTANDARIZACIÓN) :D");
+
+
+mostrar("");
+mostrar("PASO 1: Cargar datos con patos");
+mostrar("-------------------------------------");
+
+dataframe df = patos.leer_csv("ejemplos/prueba.csv");
+
+mostrar("Columnas: " + a_cadena(df.columnas()));
+mostrar("Tipos detectados:");
+diccionario tipos = df.detectar_tipos();
+mostrar(tipos);
+
+
+mostrar("");
+mostrar("PASO 2: Preparación de datos");
+mostrar("-------------------------------------");
+
+// Extraer características (X) y etiquetas (y)
+matriz X = df.to_matriz(["edad", "salario"]);
+lista y = df.to_etiqueta("clase");
+
+mostrar("Características (X):");
+por fila en X:
+    mostrar("  " + a_cadena(fila));
+fin
+mostrar("");
+mostrar("Etiquetas (y): " + a_cadena(y));
+
+
+mostrar("");
+mostrar("PASO 3: Normalización (norm)");
+mostrar("-------------------------------------");
+
+diccionario norm = NumStan.normalizar_minmax(X);
+matriz X_norm = norm["matriz"];
+diccionario params = norm["params"];
+
+mostrar("Datos normalizados:");
+por fila en X_norm:
+    mostrar("  " + a_cadena(fila));
+fin
+
+mostrar("");
+mostrar("Parámetros guardados:");
+mostrar("  Mins: " + a_cadena(params["mins"]));
+mostrar("  Maxs: " + a_cadena(params["maxs"]));
+
+
+mostrar("");
+mostrar("PASO 4: División entrenamiento/prueba (80/20)");
+mostrar("-------------------------------------");
+
+lista division = patos.div_entreno(X_norm, y, 0.8);
+
+matriz X_train = division[0];
+lista y_train = division[1];
+matriz X_test = division[2];
+lista y_test = division[3];
+
+mostrar("Conjunto de entrenamiento:");
+mostrar("  X_train: " + a_cadena(X_train));
+mostrar("  y_train: " + a_cadena(y_train));
+
+mostrar("");
+mostrar("Conjunto de prueba:");
+mostrar("  X_test:  " + a_cadena(X_test));
+mostrar("  y_test:  " + a_cadena(y_test));
+mostrar("  Podemos notar que el resultado del entrenamiento es el mismo con normalizado :P");
+
+
+mostrar("");
+mostrar("PASO 5: Inicialización de pesos");
+mostrar("-------------------------------------");
+
+entero n_features = 2;  // edad, salario
+entero n_hidden = 4;    // neuronas ocultas
+entero n_output = 1;    // clasificación binaria
+
+// Capa 1: entrada → oculta
+matriz W1 = NumStan.xavier_init(n_features, n_hidden);
+matriz b1 = NumStan.zeros(1, n_hidden);
+
+// Capa 2: oculta → salida
+matriz W2 = NumStan.xavier_init(n_hidden, n_output);
+matriz b2 = NumStan.zeros(1, n_output);
+
+mostrar("Pesos W1 (2x4): entrada → oculta");
+por fila en W1:
+    mostrar("  " + a_cadena(fila));
+fin
+
+mostrar("");
+mostrar("Pesos W2 (4x1): oculta → salida");
+por fila en W2:
+    mostrar("  " + a_cadena(fila));
+fin
+
+
+mostrar("");
+mostrar("PASO 6: Predicciones del modelo");
+mostrar("-------------------------------------");
+
+// En un modelo real, aquí iría el forward pass
+// Por ahora simulamos predicciones
+lista y_pred_train = [0, 1, 0, 1];  // simulado (4 elementos = len(y_train))
+lista y_pred_test = [0];            // simulado (1 elemento = len(y_test))
+
+mostrar("Predicciones en entrenamiento: " + a_cadena(y_pred_train));
+mostrar("Predicciones en prueba:        " + a_cadena(y_pred_test));
+
+
+mostrar("");
+mostrar("PASO 7: Evaluación del modelo");
+mostrar("-------------------------------------");
+
+// Métricas de entrenamiento
+decimal train_acc = NumStan.accuracy(y_train, y_pred_train);
+diccionario train_cm = NumStan.confusion_matrix(y_train, y_pred_train);
+decimal train_f1 = NumStan.f1_score(y_train, y_pred_train);
+
+mostrar("ENTRENAMIENTO:");
+mostrar("  Accuracy: " + a_cadena(train_acc));
+mostrar("  F1-Score: " + a_cadena(train_f1));
+mostrar("  Matriz de confusión: TP=" + a_cadena(train_cm["TP"]) + 
+        " TN=" + a_cadena(train_cm["TN"]) + 
+        " FP=" + a_cadena(train_cm["FP"]) + 
+        " FN=" + a_cadena(train_cm["FN"]));
+
+mostrar("");
+
+// Métricas de prueba
+decimal test_acc = NumStan.accuracy(y_test, y_pred_test);
+diccionario test_cm = NumStan.confusion_matrix(y_test, y_pred_test);
+decimal test_f1 = NumStan.f1_score(y_test, y_pred_test);
+
+mostrar("PRUEBA:");
+mostrar("  Accuracy: " + a_cadena(test_acc));
+mostrar("  F1-Score: " + a_cadena(test_f1));
+mostrar("  Matriz de confusión: TP=" + a_cadena(test_cm["TP"]) + 
+        " TN=" + a_cadena(test_cm["TN"]) + 
+        " FP=" + a_cadena(test_cm["FP"]) + 
+        " FN=" + a_cadena(test_cm["FN"]));
+
+
+mostrar("");
+mostrar("PASO 8: Visualización");
+mostrar("-------------------------------------");
+
+// Extraer datos para visualización
+lista edades_orig = df.to_etiqueta("edad");
+lista salarios_orig = df.to_etiqueta("salario");
+lista clases = df.to_etiqueta("clase");
+
+// Gráfica 1: Datos originales coloreados por clase
+StanPlot.crear_dispersion(edades_orig, salarios_orig, "Distribución por Clase", "Edad", "Salario");
+StanPlot.color_puntos(100, 100, 255);
+StanPlot.tamano_puntos(12);
+StanPlot.guardar("ml_datos_clases.svg");
+
+// Gráfica 2: Datos normalizados
+lista edades_norm = [];
+lista salarios_norm = [];
+
+por fila en X_norm:
+    edades_norm = edades_norm + [fila[0]];
+    salarios_norm = salarios_norm + [fila[1]];
+fin
+
+StanPlot.crear_dispersion(edades_norm, salarios_norm, "Datos Normalizados", "Edad Norm.", "Salario Norm.");
+StanPlot.color_puntos(255, 100, 100);
+StanPlot.tamano_puntos(12);
+StanPlot.guardar("ml_datos_normalizados.svg");
+
+// Gráfica 3: Métricas
+lista metricas_nombres = ["Train Acc", "Test Acc", "Train F1", "Test F1"];
+lista metricas_valores = [train_acc, test_acc, train_f1, test_f1];
+
+StanPlot.crear_barras(metricas_nombres, metricas_valores, "Métricas del Modelo", "Métrica", "Valor");
+StanPlot.color_barras(50, 150, 50);
+StanPlot.guardar("ml_metricas.svg");
+
+mostrar("✓ Gráficas guardadas:");
+mostrar("  - ml_datos_clases.svg");
+mostrar("  - ml_datos_normalizados.svg");
+mostrar("  - ml_metricas.svg");
+
+
+mostrar("");
+mostrar("PASO 9: Guardar modelo y parámetros");
+mostrar("-------------------------------------");
+
+mostrar("Parámetros de normalización:");
+mostrar("  mins: " + a_cadena(params["mins"]));
+mostrar("  maxs: " + a_cadena(params["maxs"]));
+
+mostrar("");
+mostrar("Arquitectura del modelo:");
+mostrar("  Entrada: " + a_cadena(n_features) + " neuronas");
+mostrar("  Oculta:  " + a_cadena(n_hidden) + " neuronas");
+mostrar("  Salida:  " + a_cadena(n_output) + " neurona");
+
+
+mostrar("");
+mostrar("PASO 10: Predicción en datos nuevos");
+mostrar("-------------------------------------");
+
+// Nuevo dato: persona de 28 años con salario 2200
+matriz nuevo_dato = [[28, 2200]];
+
+mostrar("Nuevo dato sin procesar: " + a_cadena(nuevo_dato));
+
+// Normalizar usando los mismos parámetros
+matriz nuevo_dato_norm = NumStan.aplicar_normalizacion(
+    nuevo_dato, 
+    params["mins"], 
+    params["maxs"]
+);
+
+mostrar("Nuevo dato normalizado:  " + a_cadena(nuevo_dato_norm));
+mostrar("(Listo para predicción con el modelo)");
+
+// ==========================================
+// RESUMEN
+// ==========================================
+mostrar("");
+mostrar("-----------------");
+mostrar("   ~ Resumen ~   ");
+mostrar("-----------------");
+mostrar("✓ Datos cargados y explorados");
+mostrar("✓ Características extraídas y normalizadas");
+mostrar("✓ División train/test realizada");
+mostrar("✓ Pesos del modelo inicializados");
+mostrar("✓ Predicciones generadas");
+mostrar("✓ Modelo evaluado con múltiples métricas");
+mostrar("✓ Resultados visualizados");
+mostrar("✓ listo para producción");
+mostrar("");
+mostrar("yap");
