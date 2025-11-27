@@ -1,16 +1,5 @@
-# librerias/StanLearn.py
-# Biblioteca ligera de aprendizaje (usa StanMath internamente)
-# - regresión lineal (redondeada a 2 decimales)
-# - regresión logística (entrenamiento por gradiente)
-# - perceptrón simple
-# - kmeans (agrupamiento)
-# - knn (clasificación)
-#
-# Requiere: librerias.StanMath (proporcionado por el proyecto)
-
 from librerias.StanMath import StanMath
 
-# ---------------- utilidades internas ----------------
 def _sum(xs):
     s = 0
     for x in xs:
@@ -48,13 +37,9 @@ def _zeros(n):
 
 def _copy_vec(v):
     return [float(x) for x in v]
-
-# ---------------- regresión lineal (closed form) ----------------
+    
+# regresión lineal
 def regresion_lineal(xs, ys, round2=True):
-    """
-    Calcula pendiente m e intercepto b por mínimos cuadrados (closed-form).
-    Devuelve (m, b). Si round2=True, redondea ambos a 2 decimales.
-    """
     n = len(xs)
     if n == 0 or len(ys) != n:
         raise Exception("Listas inválidas para regresión lineal")
@@ -87,7 +72,6 @@ def predecir_lineal(xs, m, b, round2=True):
         res.append(_round2(v) if round2 else v)
     return res
 
-# Compatibilidad con nombres anteriores:
 def regresion_pendiente(xs, ys):
     m, _ = regresion_lineal(xs, ys, round2=True)
     return m
@@ -99,14 +83,12 @@ def regresion_intercepto(xs, ys):
 def predecir(xs, m, b):
     return predecir_lineal(xs, m, b, round2=True)
 
-# ---------------- regresión logística ----------------
+# regresión logística
 def _sigmoid(z):
-    # sigmoid usando StanMath.exp
     try:
         ez = StanMath.exp(-z)
         return 1.0 / (1.0 + ez)
     except Exception:
-        # fallback numérico simple
         try:
             ez = StanMath.exp(-z)
             return 1.0 / (1.0 + ez)
@@ -116,7 +98,6 @@ def _sigmoid(z):
             return 1.0 / (1.0 + StanMath.exp(-z))
 
 def _safe_log(x):
-    # usar StanMath.log, proteger extremos
     if x <= 1e-15:
         x = 1e-15
     if x >= 1 - 1e-15:
@@ -124,12 +105,6 @@ def _safe_log(x):
     return StanMath.log(x)
 
 def regresion_logistica_train(X, y, lr=0.1, epochs=200):
-    """
-    Entrena regresión logística por batch gradient descent.
-    X: lista de vectores (n x d)
-    y: etiquetas 0/1
-    Devuelve (w, b)
-    """
     if not X or len(X) != len(y):
         raise Exception("Datos inválidos para regresión logística")
     n = len(X)
@@ -167,7 +142,7 @@ def regresion_logistica_predict(X, w, b, threshold=0.5):
     probs = regresion_logistica_predict_proba(X, w, b)
     return [1 if p >= threshold else 0 for p in probs]
 
-# ---------------- perceptrón simple ----------------
+# perceptrón simple
 def perceptron_train(X, y, epochs=100, lr=1.0):
     """
     Perceptrón binario. y in {0,1} -> internamente convertimos a {-1,1}
@@ -207,7 +182,7 @@ def kmeans(X, k=2, max_iter=100):
         return [], []
     n = len(X)
     d = len(X[0])
-    # inicializar centroides tomando k muestras aleatorias (usamos StanMath.random y randint)
+    # inicializar centroides tomando k muestras aleatorias
     k = min(k, n)
     # generar índices únicos
     inds = []
@@ -260,7 +235,7 @@ def kmeans(X, k=2, max_iter=100):
             break
     return centroids, labels
 
-# ---------------- K-NN ----------------
+# K-NN
 def knn_predict(X_train, y_train, x_query, k=3):
     if not X_train:
         raise Exception("KNN: no hay datos de entrenamiento")
@@ -281,7 +256,6 @@ def knn_predict(X_train, y_train, x_query, k=3):
             best = lab
     return best
 
-# ---------------- Export / Wrappers para compatibilidad con Deeper ----------------
 # regresión lineal compat:
 def regresion_pendiente_wrapper(xs, ys):
     m, _ = regresion_lineal(xs, ys, round2=True)
@@ -293,22 +267,4 @@ def regresion_intercepto_wrapper(xs, ys):
 
 def predecir_wrapper(xs, m, b):
     return predecir_lineal(xs, m, b, round2=True)
-
-# exponer funciones con nombres sencillos (compatibilidad)
-regresion_pendiente = regresion_pendiente_wrapper
-regresion_intercepto = regresion_intercepto_wrapper
-predecir = predecir_wrapper
-
-# exports adicionales
-regresion_lineal_train = regresion_lineal
-predecir_lineal = predecir_lineal
-
-logistic_train = regresion_logistica_train
-logistic_predict_proba = regresion_logistica_predict_proba
-logistic_predict = regresion_logistica_predict
-
-perceptron_train = perceptron_train
-perceptron_predict = perceptron_predict
-
-kmeans_wrapper = kmeans
-knn_wrapper = knn_predict
+    
