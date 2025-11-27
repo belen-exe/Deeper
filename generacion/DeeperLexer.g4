@@ -20,7 +20,7 @@ CADENA_T   : 'cadena';
 LISTA_T    : 'lista';
 DICC_T     : 'diccionario';
 MATRIZ_T   : 'matriz';
-DATAFRAME_T: 'dataframe';  // <- NUEVO TIPO
+DATAFRAME_T: 'dataframe';
 
 // LITERALES
 BOOL_LIT : 'verdadero' | 'falso';
