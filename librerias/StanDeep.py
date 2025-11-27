@@ -3,11 +3,23 @@
 # Usa StanMath internamente y está diseñada para ser simple y educativa
 
 from librerias.StanMath import StanMath
-import random
+from librerias.NumStan import NumStan
+
+
+def custom_uniform(a, b):
+    """Genera número aleatorio uniforme en [a, b) usando StanMath. random()"""
+    return a + (b - a) * StanMath.random()
 
 # ============================
 #     FUNCIONES DE ACTIVACIÓN
 # ============================
+
+def custom_uniform(a, b):
+    """
+    Genera número aleatorio uniforme en [a, b) 
+    usando el generador congruencial lineal de StanMath
+    """
+    return a + (b - a) * StanMath.random()
 
 class ActivacionReLU:
     """ReLU: máximo entre 0 y x"""
@@ -63,7 +75,7 @@ class CapaDensa:
         
         # Pesos: matriz de n_entradas x n_salidas
         self.W = [
-            [random.uniform(-limite, limite) for _ in range(n_salidas)]
+            [custom_uniform(-limite, limite) for _ in range(n_salidas)]
             for _ in range(n_entradas)
         ]
         
@@ -87,7 +99,8 @@ class CapaDensa:
             suma = self.b[j]
             for i in range(len(x)):
                 suma += x[i] * self.W[i][j]
-            z. append(suma)
+            z.append(suma)
+
         
         self.z_cache = z
         
