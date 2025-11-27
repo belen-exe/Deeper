@@ -1,0 +1,186 @@
+// Ejemplo completo de Deep Learning en Deeper
+// Clasificación de empleados usando Perceptrón Multicapa
+
+// 1. IMPORTAR LIBRERÍAS
+importar patos como pt;
+importar StanDeep como sd;
+importar StanPlot como sp;
+importar NumStan como ns;
+importar StanMath como sm;
+
+mostrar("=== CLASIFICACIÓN CON DEEP LEARNING ===");
+mostrar("");
+
+// 2. CARGAR Y EXPLORAR DATOS
+mostrar("1. Cargando datos...");
+dataframe df = pt.leer_csv("ejemplos/prueba.csv");
+
+mostrar("Columnas disponibles:");
+lista cols = df.columnas();
+mostrar(cols);
+
+// 3. PREPROCESAMIENTO DE DATOS
+mostrar("");
+mostrar("2. Preprocesando datos...");
+
+// Detectar tipos de columnas
+diccionario tipos = df.detectar_tipos();
+mostrar("Tipos de columnas:");
+mostrar(tipos);
+
+// 4. PREPARAR DATOS PARA LA RED
+mostrar("");
+mostrar("3. Preparando datos de entrenamiento...");
+
+// Seleccionar características (edad, salario)
+lista columnas_x = ["edad", "salario"];
+matriz X_raw = df.to_matriz(columnas_x);
+
+// Normalizar datos usando NumStan
+matriz X_norm = ns.norm(X_raw);
+mostrar("Datos norm(primeras 3 filas):");
+entero j = 0;
+mientras j < 3:
+    mostrar(X_norm[j]);
+    j = j + 1;
+fin
+
+// Extraer etiquetas
+lista y = df.to_etiqueta("clase");
+mostrar("Etiquetas:");
+mostrar(y);
+
+// Convertir etiquetas a formato de red (vectores)
+lista y_deep = [];
+entero k = 0;
+mientras k < 5:
+    lista etiqueta_vec = [y[k]];
+    lista temp = y_deep + [etiqueta_vec];
+    y_deep = temp;
+    k = k + 1;
+fin
+
+// 5. DIVIDIR EN ENTRENAMIENTO Y PRUEBA
+mostrar("");
+mostrar("4. Dividiendo datos (80% entrenamiento, 20% prueba)...");
+
+// División manual (primeros 4 para entrenamiento, último para prueba)
+matriz X_train = [X_norm[0], X_norm[1], X_norm[2], X_norm[3]];
+lista y_train = [y_deep[0], y_deep[1], y_deep[2], y_deep[3]];
+matriz X_test = [X_norm[4]];
+lista y_test = [y_deep[4]];
+
+mostrar("Tamaño entrenamiento: 4 ejemplos");
+mostrar("Tamaño prueba: 1 ejemplo");
+
+// 6. CONSTRUIR LA RED NEURONAL
+mostrar("");
+mostrar("5. Construyendo red neuronal...");
+mostrar("Arquitectura:");
+mostrar("  - Capa entrada: 2 neuronas (edad, salario)");
+mostrar("  - Capa oculta 1: 4 neuronas (ReLU)");
+mostrar("  - Capa oculta 2: 3 neuronas (ReLU)");
+mostrar("  - Capa salida: 1 neurona (Sigmoid)");
+
+// Crear red
+sd.MLP.agregar_capa(2, 4, "relu");
+sd.MLP.agregar_capa(4, 3, "relu");
+sd.MLP.agregar_capa(3, 1, "sigmoid");
+
+// Compilar red
+sd.MLP.compilar("entropia", 0.1);
+mostrar("Red compilada con función de pérdida: entropía cruzada");
+
+// 7. ENTRENAR LA RED
+mostrar("");
+mostrar("6. Entrenando la red...");
+sd.MLP.entrenar(X_train, y_train, 50, 0.1, verdadero);
+
+// 8. EVALUAR EL MODELO
+mostrar("");
+mostrar("7. Evaluando modelo...");
+
+decimal perdida_test = sd.MLP.evaluar(X_test, y_test);
+mostrar("Pérdida en conjunto de prueba:");
+mostrar(perdida_test);
+
+// 9. HACER PREDICCIONES
+mostrar("");
+mostrar("8. Haciendo predicciones...");
+
+lista predicciones = sd.MLP.predecir(X_test);
+mostrar("Predicción para el ejemplo de prueba:");
+mostrar(predicciones[0]);
+
+// Convertir a clase (umbral 0.5)
+decimal prob = predicciones[0][0];
+entero clase_pred = 0;
+si prob >= 0.5:
+    clase_pred = 1;
+fin
+
+mostrar("Clase predicha:");
+mostrar(clase_pred);
+mostrar("Clase real:");
+mostrar(y[4]);
+
+// 10. ANÁLISIS ESTADÍSTICO CON STANMATH
+mostrar("");
+mostrar("9. Análisis estadístico de los datos...");
+
+// Estadísticas de edad
+lista edades = df.to_etiqueta("edad");
+decimal edad_max = sm.max(edades);
+decimal edad_min = sm.min(edades);
+mostrar("Edad - Rango:");
+mostrar(edad_min);
+mostrar(edad_max);
+
+// Estadísticas de salario
+lista salarios = df.to_etiqueta("salario");
+decimal salario_max = sm.max(salarios);
+decimal salario_min = sm.min(salarios);
+mostrar("Salario - Rango:");
+mostrar(salario_min);
+mostrar(salario_max);
+
+// 11. VISUALIZACIÓN DE RESULTADOS
+mostrar("");
+mostrar("10. Generando visualizaciones...");
+
+// Gráfica de dispersión: edad vs salario coloreado por clase
+sp.scatter(edades, salarios, y, "Edad vs Salario por Clase");
+
+// Gráfica de barras: distribución de clases
+lista clases_unicas = [0, 1];
+entero conteo_0 = 0;
+entero conteo_1 = 0;
+entero m = 0;
+mientras m < 5:
+    entero clase_actual = y[m];
+    si clase_actual == 0:
+        conteo_0 = conteo_0 + 1;
+    sino:
+        conteo_1 = conteo_1 + 1;
+    fin
+    m = m + 1;
+fin
+
+lista conteo_clases = [conteo_0, conteo_1];
+
+lista labels_clase = ["Clase 0", "Clase 1"];
+sp.bar(labels_clase, conteo_clases, "Distribución de Clases");
+
+// 12. RESUMEN FINAL
+mostrar("");
+mostrar("11. Proceso completado");
+mostrar("");
+mostrar("=== RESUMEN DEL EXPERIMENTO ===");
+mostrar("- Datos cargados: 5 ejemplos");
+mostrar("- Características: edad, salario (normalizadas)");
+mostrar("- Red: 2->4->3->1 neuronas");
+mostrar("- Épocas entrenamiento: 50");
+mostrar("- Función de pérdida: Entropía cruzada");
+mostrar("- Precisión evaluada en conjunto de prueba");
+mostrar("");
+mostrar("=== FIN DEL PROGRAMA ===");
