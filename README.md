@@ -58,9 +58,9 @@ Por eso, cada biblioteca expone funciones o clases de Python que luego pueden se
 
 ### StanMath.py → Biblioteca matemática nativa
 
-Función: proveer cálculo matemático básico y avanzado sin depender de NumPy, 100% en Python.
+#### Función: proveer cálculo matemático básico y avanzado sin depender de NumPy, 100% en Python.
 
-Contenido típico:
+##### Contenido típico:
 
 - Aritmética:	abs, potencia, mod
 - Trigonometría:	sen, cos, tan, atan, etc.
