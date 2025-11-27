@@ -27,8 +27,6 @@ class MiVisitor(DeeperParserVisitor):
         self.global_entorno.definir("leer_archivo", leer_archivo)
         self.global_entorno.definir("escribir_archivo", escribir_archivo)
 
-        # aqui no va ni una funcion de ninguna libreria, si no se los come el coco
-
     def entorno_actual(self):
         """Retorna el entorno de la capa actual."""
         return self.entornos[-1]
@@ -356,14 +354,10 @@ class MiVisitor(DeeperParserVisitor):
             alias = ctx.ID(1).getText()
 
         try:
-            # Importa el módulo Python: librerias.StanMath, librerias.patos, etc.
             py_module = __import__(f"librerias.{modulo}", fromlist=[modulo])
         except Exception as e:
             raise DeeperError(f"No se pudo cargar el módulo '{modulo}': {e}")
 
-        # Si dentro del módulo existe una clase con el mismo nombre que el módulo
-        # (ej. en librerias/StanMath.py hay una clase StanMath),
-        # usamos esa clase. Si no, usamos el módulo completo.
         obj = getattr(py_module, modulo, py_module)
 
         # Guardamos el objeto (clase o módulo) bajo el alias
