@@ -1,22 +1,18 @@
-# librerias/StanPlot.py
-# StanPlot para Deeper (módulo importable)
-# - Usa StanMath y StanRegression
-# - Solo crea: lineas, barras (con etiquetas), dispersion, regresion
-# - SVG output, colores agradables por defecto
-
 from librerias.StanMath import StanMath
 
-# intentar importar StanRegression (debe existir)
 try:
-    from librerias.StanRegression import regresion_pendiente, regresion_intercepto, predecir
+    from librerias.StanLearn import regresion_pendiente, regresion_intercepto, predecir
+except ImportError:
+    raise Exception("StanLearn no disponible. Asegúrate de que el archivo exista y esté en /librerias")
+
 except Exception:
     # Si no existe, definimos placeholders que lanzan error si se usan.
     def regresion_pendiente(xs, ys):
-        raise Exception("StanRegression no disponible.")
+        raise Exception("StanLearn no disponible.")
     def regresion_intercepto(xs, ys):
-        raise Exception("StanRegression no disponible.")
+        raise Exception("StanLearn no disponible.")
     def predecir(xs, m, b):
-        raise Exception("StanRegression no disponible.")
+        raise Exception("StanLearn no disponible.")
 
 # ---------- utilidades ----------
 def _rgb_to_str(rgb):
