@@ -1,4 +1,4 @@
-// Ejemplo completo de Deep Learning en Deeper
+// EJEMPLO COMPLETO DE DEEP LEARNING EN DEEPER
 // Clasificación de empleados usando Perceptrón Multicapa
 
 // 1. IMPORTAR LIBRERÍAS
@@ -19,28 +19,36 @@ mostrar("Columnas disponibles:");
 lista cols = df.columnas();
 mostrar(cols);
 
+// Obtener total de filas
+entero total = df.contar_filas();
+
 // 3. PREPROCESAMIENTO DE DATOS
 mostrar("");
 mostrar("2. Preprocesando datos...");
 
-// Detectar tipos de columnas
 diccionario tipos = df.detectar_tipos();
 mostrar("Tipos de columnas:");
 mostrar(tipos);
 
-// 4. PREPARAR DATOS PARA LA RED
+// 4. PREPARAR MATRICES PARA LA RED
 mostrar("");
 mostrar("3. Preparando datos de entrenamiento...");
 
-// Seleccionar características (edad, salario)
 lista columnas_x = ["edad", "salario"];
 matriz X_raw = df.to_matriz(columnas_x);
 
-// Normalizar datos usando NumStan
-matriz X_norm = ns.norm(X_raw);
-mostrar("Datos norm(primeras 3 filas):");
+// Normalizar datos con Min-Max
+diccionario X_norm_data = ns.normalizar_minmax(X_raw);
+matriz X_norm = X_norm_data["matriz"];
+
+mostrar("Datos normalizados (primeras 3 filas):");
 entero j = 0;
-mientras j < 3:
+entero lim = 3;
+si total < 3:
+    lim = total;
+fin
+
+mientras j < lim:
     mostrar(X_norm[j]);
     j = j + 1;
 fin
@@ -50,53 +58,60 @@ lista y = df.to_etiqueta("clase");
 mostrar("Etiquetas:");
 mostrar(y);
 
-// Convertir etiquetas a formato de red (vectores)
+// Convertir a formato [ [clase], [clase], ... ] para todo el dataset
 lista y_deep = [];
 entero k = 0;
-mientras k < 5:
+mientras k < total:
     lista etiqueta_vec = [y[k]];
-    lista temp = y_deep + [etiqueta_vec];
-    y_deep = temp;
+    // concatenar
+    y_deep = y_deep + [etiqueta_vec];
     k = k + 1;
 fin
 
-// 5. DIVIDIR EN ENTRENAMIENTO Y PRUEBA
+// 5. DIVISIÓN EN ENTRENAMIENTO/PRUEBA
 mostrar("");
-mostrar("4. Dividiendo datos (80% entrenamiento, 20% prueba)...");
+mostrar("4. Dividiendo datos...");
 
-// División manual (primeros 4 para entrenamiento, último para prueba)
-matriz X_train = [X_norm[0], X_norm[1], X_norm[2], X_norm[3]];
-lista y_train = [y_deep[0], y_deep[1], y_deep[2], y_deep[3]];
-matriz X_test = [X_norm[4]];
-lista y_test = [y_deep[4]];
+// Construimos entrenamiento con todas las filas excepto la última, y la última como prueba
+matriz X_train = [];
+lista y_train = [];
+si total < 2:
+    mostrar("No hay suficientes ejemplos para dividir en entrenamiento/prueba");
+    // en este caso se podría abortar o usar todo para entrenamiento; aquí abortamos mostrando mensaje
+sino:
+    entero idx = 0;
+    mientras idx < total - 1:
+        X_train = X_train + [X_norm[idx]];
+        y_train = y_train + [y_deep[idx]];
+        idx = idx + 1;
+    fin
 
-mostrar("Tamaño entrenamiento: 4 ejemplos");
-mostrar("Tamaño prueba: 1 ejemplo");
+    matriz X_test = [X_norm[total - 1]];
+    lista y_test = [y_deep[total - 1]];
 
-// 6. CONSTRUIR LA RED NEURONAL
+    mostrar("Tamaño entrenamiento:");
+    mostrar(total - 1);
+    mostrar("Tamaño prueba:");
+    mostrar(1);
+fin
+
+// 6. CONSTRUIR RED NEURONAL
 mostrar("");
 mostrar("5. Construyendo red neuronal...");
-mostrar("Arquitectura:");
-mostrar("  - Capa entrada: 2 neuronas (edad, salario)");
-mostrar("  - Capa oculta 1: 4 neuronas (ReLU)");
-mostrar("  - Capa oculta 2: 3 neuronas (ReLU)");
-mostrar("  - Capa salida: 1 neurona (Sigmoid)");
 
-// Crear red
 sd.MLP.agregar_capa(2, 4, "relu");
 sd.MLP.agregar_capa(4, 3, "relu");
 sd.MLP.agregar_capa(3, 1, "sigmoid");
-
-// Compilar red
 sd.MLP.compilar("entropia", 0.1);
+
 mostrar("Red compilada con función de pérdida: entropía cruzada");
 
-// 7. ENTRENAR LA RED
+// 7. ENTRENAMIENTO
 mostrar("");
 mostrar("6. Entrenando la red...");
 sd.MLP.entrenar(X_train, y_train, 50, 0.1, verdadero);
 
-// 8. EVALUAR EL MODELO
+// 8. EVALUACIÓN
 mostrar("");
 mostrar("7. Evaluando modelo...");
 
@@ -104,15 +119,14 @@ decimal perdida_test = sd.MLP.evaluar(X_test, y_test);
 mostrar("Pérdida en conjunto de prueba:");
 mostrar(perdida_test);
 
-// 9. HACER PREDICCIONES
+// 9. PREDICCIONES
 mostrar("");
 mostrar("8. Haciendo predicciones...");
 
 lista predicciones = sd.MLP.predecir(X_test);
-mostrar("Predicción para el ejemplo de prueba:");
+mostrar("Predicción del ejemplo de prueba:");
 mostrar(predicciones[0]);
 
-// Convertir a clase (umbral 0.5)
 decimal prob = predicciones[0][0];
 entero clase_pred = 0;
 si prob >= 0.5:
@@ -122,65 +136,83 @@ fin
 mostrar("Clase predicha:");
 mostrar(clase_pred);
 mostrar("Clase real:");
-mostrar(y[4]);
+mostrar(y[total - 1]);
 
-// 10. ANÁLISIS ESTADÍSTICO CON STANMATH
+// 10. ANÁLISIS ESTADÍSTICO
 mostrar("");
 mostrar("9. Análisis estadístico de los datos...");
 
 // Estadísticas de edad
 lista edades = df.to_etiqueta("edad");
-decimal edad_max = sm.max(edades);
-decimal edad_min = sm.min(edades);
+decimal edad_max = edades[0];
+decimal edad_min = edades[0];
+
+entero ii = 0;
+mientras ii < total:
+    si edades[ii] > edad_max:
+        edad_max = edades[ii];
+    fin
+    si edades[ii] < edad_min:
+        edad_min = edades[ii];
+    fin
+    ii = ii + 1;
+fin
+
 mostrar("Edad - Rango:");
 mostrar(edad_min);
 mostrar(edad_max);
 
 // Estadísticas de salario
 lista salarios = df.to_etiqueta("salario");
-decimal salario_max = sm.max(salarios);
-decimal salario_min = sm.min(salarios);
+decimal salario_max = salarios[0];
+decimal salario_min = salarios[0];
+
+entero jj = 0;
+mientras jj < total:
+    si salarios[jj] > salario_max:
+        salario_max = salarios[jj];
+    fin
+    si salarios[jj] < salario_min:
+        salario_min = salarios[jj];
+    fin
+    jj = jj + 1;
+fin
+
 mostrar("Salario - Rango:");
 mostrar(salario_min);
 mostrar(salario_max);
 
-// 11. VISUALIZACIÓN DE RESULTADOS
+// 11. GRAFICACIÓN
 mostrar("");
-mostrar("10. Generando visualizaciones...");
+mostrar("10. Visualizaciones...");
 
-// Gráfica de dispersión: edad vs salario coloreado por clase
-sp.scatter(edades, salarios, y, "Edad vs Salario por Clase");
+// Dispersión (asumimos sp.crear_dispersion)
+sp.crear_dispersion(edades, salarios, "Edad vs Salario", "Edad", "Salario");
 
-// Gráfica de barras: distribución de clases
-lista clases_unicas = [0, 1];
-entero conteo_0 = 0;
-entero conteo_1 = 0;
-entero m = 0;
-mientras m < 5:
-    entero clase_actual = y[m];
-    si clase_actual == 0:
-        conteo_0 = conteo_0 + 1;
+sp.guardar("grafica_dispersion.svg");
+
+
+// Barras por cantidad de clases
+entero conteo0 = 0;
+entero conteo1 = 0;
+entero a = 0;
+mientras a < total:
+    si y[a] == 0:
+        conteo0 = conteo0 + 1;
     sino:
-        conteo_1 = conteo_1 + 1;
+        conteo1 = conteo1 + 1;
     fin
-    m = m + 1;
+    a = a + 1;
 fin
 
-lista conteo_clases = [conteo_0, conteo_1];
+lista categorias = ["Clase 0", "Clase 1"];
+lista valores = [conteo0, conteo1];
+sp.crear_barras(categorias, valores, "Distribución de clases", "", "");
+sp.guardar("grafica_barras.svg");
 
-lista labels_clase = ["Clase 0", "Clase 1"];
-sp.bar(labels_clase, conteo_clases, "Distribución de Clases");
 
 // 12. RESUMEN FINAL
 mostrar("");
 mostrar("11. Proceso completado");
-mostrar("");
-mostrar("=== RESUMEN DEL EXPERIMENTO ===");
-mostrar("- Datos cargados: 5 ejemplos");
-mostrar("- Características: edad, salario (normalizadas)");
-mostrar("- Red: 2->4->3->1 neuronas");
-mostrar("- Épocas entrenamiento: 50");
-mostrar("- Función de pérdida: Entropía cruzada");
-mostrar("- Precisión evaluada en conjunto de prueba");
 mostrar("");
 mostrar("=== FIN DEL PROGRAMA ===");
