@@ -95,6 +95,8 @@ dataframe df_modificado = patos.leer_csv("ejemplos/prueba.csv");
 // para reemplazar: (columna, viejo dato, nuevo dato)
 df_modificado.reemplazar("ciudad", "Bogota", "Bogotá D.C.");
 
+entero resultado = df_modificado.guardar_csv("ejemplos/datos_modificados.csv");
+
 lista ciudades_nuevas = df_modificado.to_etiqueta("ciudad");
 mostrar("   Ciudades actualizadas:");
 mostrar(ciudades_nuevas);
@@ -112,8 +114,6 @@ mostrar("11. guardar_csv - Guardar datos modificados:");
 
 dataframe df_para_guardar = patos.leer_csv("ejemplos/prueba.csv");
 df_para_guardar.reemplazar("ciudad", "Cali", "Santiago de Cali");
-
-entero resultado = df_para_guardar.guardar_csv("ejemplos/datos_modificados.csv");
 
 si resultado == verdadero:
     mostrar("Archivo guardado: ejemplos/datos_modificados.csv");
@@ -260,4 +260,3 @@ mostrar("✓ div_entreno(X, y, %)        - Dividir datos ML");
 
 mostrar("");
 mostrar("yap");
-
