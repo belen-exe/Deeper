@@ -1,0 +1,263 @@
+importar patos;
+importar StanPlot;
+
+
+mostrar("TUTORIAL COMPLETO DE PATOS (DataFrame) :D");
+
+
+
+// 1. leer_csv - Cargar datos desde archivo
+mostrar("");
+mostrar("1. leer_csv - Cargando datos...");
+dataframe df = patos.leer_csv("ejemplos/prueba.csv");
+mostrar("Archivo cargado exitosamente");
+
+
+// 2. COLUMNAS - Ver nombres de columnas
+mostrar("");
+mostrar("2. columnas - Nombres de las columnas:");
+lista cols = df.columnas();
+mostrar(cols);
+
+
+// 3. detectar_tipos - Identificar tipos de datos
+mostrar("");
+mostrar("3. detectar_tipos - Tipos de cada columna:");
+
+//guardar en diccionario para mostrar
+diccionario tipos = df.detectar_tipos();
+mostrar(tipos);
+
+
+// 4. to_etiqueta - Extraer una columna completa
+mostrar("");
+mostrar("4. to_etiqueta - Extraer columna 'edad':");
+lista edades = df.to_etiqueta("edad");
+mostrar(edades);
+
+mostrar("");
+mostrar("   Extraer columna 'salario':");
+lista salarios = df.to_etiqueta("salario");
+mostrar(salarios);
+
+// 5. to_matriz - Convertir a matriz
+mostrar("");
+mostrar("5. to_matriz - Convertir múltiples columnas a matriz:");
+matriz datos_numericos = df.to_matriz(["edad", "salario"]);
+mostrar("   Matriz [edad, salario]:");
+mostrar(datos_numericos);
+
+
+// 6. seleccionar - Seleccionar columnas específicas
+mostrar("");
+mostrar("6. seleccionar - Solo edad y ciudad:");
+dataframe df_reducido = df.seleccionar(["edad", "ciudad"]);
+mostrar("   Columnas del nuevo DataFrame:");
+mostrar(df_reducido.columnas());
+
+
+// 7. filtrar - Filtrar filas con función
+mostrar("");
+mostrar("7. filtrar - Personas con salario > 2000:");
+
+fun salario_alto(fila):
+    retornar fila["salario"] > 2000;
+fin
+
+dataframe df_filtrado = df.filtrar(salario_alto);
+lista edades_filtradas = df_filtrado.to_etiqueta("edad");
+lista salarios_filtrados = df_filtrado.to_etiqueta("salario");
+
+mostrar("   Edades: " + a_cadena(edades_filtradas));
+mostrar("   Salarios: " + a_cadena(salarios_filtrados));
+
+
+// 8. filtrar - Otro ejemplo de filtro
+mostrar("");
+mostrar("8. filtrar - Personas de Bogotá:");
+
+fun es_bogota(fila):
+    retornar fila["ciudad"] == "Bogota";
+fin
+
+dataframe df_bogota = df.filtrar(es_bogota);
+lista edades_bog = df_bogota.to_etiqueta("edad");
+mostrar("   Edades en Bogotá: " + a_cadena(edades_bog));
+
+
+// 9. reemplazar - Reemplazar valores
+mostrar("");
+mostrar("9. reemplazar - Cambiar 'Bogota' por 'Bogotá D.C.':");
+
+// Crear copia del DataFrame original
+dataframe df_modificado = patos.leer_csv("ejemplos/prueba.csv");
+
+// para reemplazar: (columna, viejo dato, nuevo dato)
+df_modificado.reemplazar("ciudad", "Bogota", "Bogotá D.C.");
+
+lista ciudades_nuevas = df_modificado.to_etiqueta("ciudad");
+mostrar("   Ciudades actualizadas:");
+mostrar(ciudades_nuevas);
+
+
+// 10. llenar_na - Rellenar valores nulos
+mostrar("");
+mostrar("10. llenar_na - Rellenar valores nulos");
+mostrar("en otro archivo.dp esta el ejemplo porque en este no hay nulos.");
+
+
+// 11. guardar_csv - Guardar DataFrame modificado
+mostrar("");
+mostrar("11. guardar_csv - Guardar datos modificados:");
+
+dataframe df_para_guardar = patos.leer_csv("ejemplos/prueba.csv");
+df_para_guardar.reemplazar("ciudad", "Cali", "Santiago de Cali");
+
+entero resultado = df_para_guardar.guardar_csv("ejemplos/datos_modificados.csv");
+
+si resultado == verdadero:
+    mostrar("Archivo guardado: ejemplos/datos_modificados.csv");
+sino:
+    mostrar("Error al guardar");
+fin
+
+
+// 12. div_entreno - Dividir datos para ML
+mostrar("");
+mostrar("12. div_entreno - Dividir datos entrenamiento/prueba:");
+
+// Preparar datos para machine learning
+matriz X = df.to_matriz(["edad", "salario"]);
+lista y = df.to_etiqueta("clase");
+
+mostrar("   Datos completos:");
+mostrar("   X (características): " + a_cadena(X));
+mostrar("   y (etiquetas): " + a_cadena(y));
+
+// Dividir 80% entrenamiento, 20% prueba
+lista division = patos.div_entreno(X, y, 0.8);
+
+matriz X_train = division[0];
+lista y_train = division[1];
+matriz X_test = division[2];
+lista y_test = division[3];
+
+mostrar("");
+mostrar("   Después de dividir (80/20):");
+mostrar("   X_train: " + a_cadena(X_train));
+mostrar("   y_train: " + a_cadena(y_train));
+mostrar("   Teniendo en cuenta los datos de entreno, es clase 1 si tiene un salario mayor a 2400 masomenos y clase 0 si no o puede incluso 'aprender' por la edad");
+
+mostrar("");
+mostrar("   X_test: " + a_cadena(X_test));
+mostrar("   y_test: " + a_cadena(y_test));
+mostrar("   Vemos que si mostró un resultado apropiado para tan poquitos datos, si fueran más estaría mejor :P");
+
+
+// 13. Encadenar operaciones
+mostrar("");
+mostrar("13. encadenar - Múltiples operaciones seguidas:");
+
+dataframe df_chain = patos.leer_csv("ejemplos/prueba.csv");
+
+// Filtrar mayores de 25
+fun mayores_25(fila):
+    retornar fila["edad"] > 25;
+fin
+
+dataframe df_adultos = df_chain.filtrar(mayores_25);
+
+// Seleccionar solo edad y salario
+dataframe df_final = df_adultos.seleccionar(["edad", "salario"]);
+
+mostrar("   Resultado de filtrar edad>25 y seleccionar [edad, salario]:");
+matriz resultado_final = df_final.to_matriz(["edad", "salario"]);
+mostrar(resultado_final);
+
+
+// 14. con StanPlot
+mostrar("");
+mostrar("14. visualización - Crear gráficas desde DataFrame:");
+
+dataframe df_plot = patos.leer_csv("ejemplos/prueba.csv");
+
+lista x_plot = df_plot.to_etiqueta("edad");
+lista y_plot = df_plot.to_etiqueta("salario");
+
+// Gráfica de dispersión
+StanPlot.crear_dispersion(x_plot, y_plot, "Edad vs Salario", "Edad", "Salario ($)");
+StanPlot.color_puntos(255, 100, 50);
+StanPlot.tamano_puntos(10);
+StanPlot.guardar("tutorial_patos.svg");
+
+mostrar("Gráfica guardada: tutorial_patos.svg");
+
+
+// 15. ANÁLISIS ESTADÍSTICO BÁSICO
+mostrar("");
+mostrar("15. análisis - Estadísticas básicas:");
+
+lista salarios_analisis = df.to_etiqueta("salario");
+
+// Calcular promedio manualmente
+entero suma = 0;
+entero contador = 0;
+
+por sal en salarios_analisis:
+    suma = suma + sal;
+    contador = contador + 1;
+fin
+
+decimal promedio = suma / contador;
+mostrar("   Salario promedio: " + a_cadena(promedio));
+
+// Encontrar máximo y mínimo (tambien se puede con StanMath)
+entero maximo = salarios_analisis[0];
+entero minimo = salarios_analisis[0];
+
+por sal en salarios_analisis:
+    si sal > maximo:
+        maximo = sal;
+    fin
+    si sal < minimo:
+        minimo = sal;
+    fin
+fin
+
+mostrar("   Salario máximo: " + a_cadena(maximo));
+mostrar("   Salario mínimo: " + a_cadena(minimo));
+
+
+// 16. múltiples columnas
+mostrar("");
+mostrar("16. múltiples columnas - Todas las columnas como matriz:");
+
+matriz todo = df.to_matriz(["edad", "salario", "clase"]);
+mostrar("   Matriz completa [edad, salario, clase]:");
+
+por fila en todo:
+    mostrar("   " + a_cadena(fila));
+fin
+
+
+// RESUMEN FINAL
+mostrar("");
+mostrar("-----------------");
+mostrar("   ~ Resumen ~   ");
+mostrar("-----------------");
+mostrar("");
+mostrar("✓ leer_csv(ruta)              - Cargar CSV");
+mostrar("✓ columnas()                  - Ver columnas");
+mostrar("✓ detectar_tipos()            - Tipos de datos");
+mostrar("✓ to_etiqueta(col)            - Extraer columna");
+mostrar("✓ to_matriz(cols)             - Convertir a matriz");
+mostrar("✓ seleccionar(cols)           - Seleccionar columnas");
+mostrar("✓ filtrar(funcion)            - Filtrar filas");
+mostrar("✓ reemplazar(col, viejo, nuevo) - Reemplazar valores");
+mostrar("✓ llenar_na(col, valor)       - Rellenar nulos");
+mostrar("✓ guardar_csv(ruta)           - Guardar a CSV");
+mostrar("✓ div_entreno(X, y, %)        - Dividir datos ML");
+
+mostrar("");
+mostrar("yap");
+

@@ -1,0 +1,31 @@
+importar patos;
+
+mostrar(Ejemplo de valores nulos");
+
+dataframe df = patos.leer_csv("ejemplos/datos_con_na.csv");
+
+mostrar("Datos originales:");
+matriz datos = df.to_matriz(["edad", "salario"]);
+mostrar(datos);
+
+// Llenar NAs en salario con 0
+df.llenar_na("salario", 0);
+
+// Llenar NAs en edad con 25
+df.llenar_na("edad", 25);
+
+// Llenar NAs en ciudad con "Desconocido"
+df.llenar_na("ciudad", "Desconocido");
+
+mostrar("");
+mostrar("Después de llenar_na:");
+matriz datos_limpios = df.to_matriz(["edad", "salario"]);
+mostrar(datos_limpios);
+
+lista ciudades = df.to_etiqueta("ciudad");
+mostrar("Ciudades: ");
+mostrar(ciudades);
+
+// Guardar datos limpios
+df.guardar_csv("ejemplos/datos_limpios.csv");
+mostrar("Datos limpios guardados");

@@ -1,0 +1,7 @@
+importar patos;
+
+dataframe df = patos.leer_csv("ejemplos/prueba.csv");
+
+mostrar(df.columnas());
+mostrar(df.detectar_tipos());
+

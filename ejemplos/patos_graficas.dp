@@ -1,0 +1,22 @@
+importar patos como p;
+importar StanPlot;
+
+dataframe df = p.leer_csv("ejemplos/ventas.csv");
+
+lista meses = df.to_etiqueta("mes");
+lista ventas = df.to_etiqueta("ventas");
+lista gastos = df.to_etiqueta("gastos");
+lista ganancia = df.to_etiqueta("ganancia");
+
+// Gráfica de ventas vs gastos
+StanPlot.crear_lineas(meses, ventas, "Ventas Anuales", "Mes", "Monto ($)");
+StanPlot.color_linea(0, 150, 0);
+StanPlot.color_puntos(0, 200, 0);
+StanPlot.guardar("ventas_2024.svg");
+
+// Gráfica de ganancias
+StanPlot.crear_barras(meses, ganancia, "Ganancias Mensuales", "Mes", "Ganancia ($)");
+StanPlot.color_barras(50, 100, 200);
+StanPlot.guardar("ganancias_2024.svg");
+
+mostrar("Gráficas generadas exitosamente");
