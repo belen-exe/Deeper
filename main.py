@@ -2,7 +2,7 @@ from antlr4 import FileStream, CommonTokenStream
 from antlr4.error.ErrorListener import ErrorListener
 from generacion.DeeperLexer import DeeperLexer
 from generacion.DeeperParser import DeeperParser
-from visitor.ejecutar import MiVisitor
+from visitor.visitor import MiVisitor
 from runtime.excepciones import DeeperError
 
 class ThrowingErrorListener(ErrorListener):
