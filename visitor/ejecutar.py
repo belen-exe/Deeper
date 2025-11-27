@@ -15,22 +15,19 @@ class FuncionDefinida:
 class MiVisitor(DeeperParserVisitor):
 
     def __init__(self):
-        # entorno global
         self.global_entorno = Entorno()
 
-        # stack de entornos, iniciamos con el global
         self.entornos = [self.global_entorno]
 
         # registrar funciones builtin (mostrar, etc.)
         for nombre, fun in BUILTINS.items():
             self.global_entorno.definir(nombre, fun)
 
-        # Funciones de archivos (NO son una librería, van en builtins)
+        # Funciones de archivos necesarios
         self.global_entorno.definir("leer_archivo", leer_archivo)
         self.global_entorno.definir("escribir_archivo", escribir_archivo)
 
-        # NO registrar librerías aquí - deben importarse con "importar"
-        # Las librerías son: StanMath, StanPlot, NumStan, patos, etc.
+        # aqui no va ni una funcion de ninguna libreria, si no se los come el coco
 
     def entorno_actual(self):
         """Retorna el entorno de la capa actual."""
@@ -65,7 +62,6 @@ class MiVisitor(DeeperParserVisitor):
         if len(args) != len(f.parametros):
             raise DeeperError(f"La función '{f.nombre}' esperaba {len(f.parametros)} argumentos, pero recibió {len(args)}.")
 
-        # crear ambiente local con el entorno donde se definió (closure)
         entorno_local = Entorno(f.entorno_def)
 
         self.entornos.append(entorno_local)
@@ -84,20 +80,29 @@ class MiVisitor(DeeperParserVisitor):
         self.entornos.pop()
         return None
 
+
     def visitLlamada_funcion(self, ctx):
         nombre = ctx.ID().getText()
         args = []
 
         if ctx.argumentos():
-            args = [self.visit(e) for e in ctx.argumentos().expr()]
+            for e in ctx.argumentos().expr():
+                arg_val = self.visit(e)
+                
+                if isinstance(arg_val, FuncionDefinida):
+                    def make_wrapper(func):
+                        def wrapper(*call_args):
+                            return self.ejecutar_funcion(func, list(call_args))
+                        return wrapper
+                    args.append(make_wrapper(arg_val))
+                else:
+                    args.append(arg_val)
 
         fun = self.entorno_actual().obtener(nombre)
 
-        # Si es función definida por el usuario
         if isinstance(fun, FuncionDefinida):
             return self.ejecutar_funcion(fun, args)
 
-        # Si es función builtin (callable de Python)
         if callable(fun):
             return fun(*args)
 
@@ -258,22 +263,33 @@ class MiVisitor(DeeperParserVisitor):
         return self.visit(ctx.atom())
 
     def visitAtom(self, ctx):
-        # 1. Evaluar el 'primary': ID, literal, (expr), lista, etc.
         valor = self.visit(ctx.primary())
 
-        # 2. Aplicar los sufijos en orden: .prop, .metodo(...), [idx], etc.
         for suf in ctx.atomSuffix():
-            # ------- Acceso / método con punto -------
             if suf.DOT():
                 call = suf.llamada_funcion()
 
                 if call is not None:
                     # caso: obj.metodo(...)
                     nombre = call.ID().getText()
-
                     args = []
+                    
                     if call.argumentos():
-                        args = [self.visit(e) for e in call.argumentos().expr()]
+                        for e in call.argumentos().expr():
+                            arg = self.visit(e)
+                            
+                            if isinstance(arg, FuncionDefinida):
+                                visitor_ref = self
+                                func_ref = arg
+                                
+                                def make_wrapper():
+                                    def wrapper(*call_args):
+                                        return visitor_ref.ejecutar_funcion(func_ref, list(call_args))
+                                    return wrapper
+                                
+                                args.append(make_wrapper())
+                            else:
+                                args.append(arg)
 
                     try:
                         fun = getattr(valor, nombre)
@@ -283,15 +299,14 @@ class MiVisitor(DeeperParserVisitor):
                     valor = fun(*args)
 
                 else:
-                    # caso: obj.prop   (atomSuffix: DOT ID)
                     nombre = suf.ID().getText()
                     try:
                         valor = getattr(valor, nombre)
                     except AttributeError:
                         raise DeeperError(f"El módulo/objeto no tiene '{nombre}'")
 
-            # ------- Indexación obj[x] -------
             elif suf.LBRACK():
+                # obj[idx]
                 idx = self.visit(suf.expr())
                 try:
                     valor = valor[idx]
@@ -332,12 +347,11 @@ class MiVisitor(DeeperParserVisitor):
 
         raise DeeperError("Expresión primaria inválida.")
     
-    # IMPORTAR - para librerías
     def visitImportar_stmt(self, ctx):
         modulo = ctx.ID(0).getText()
         alias = modulo
 
-        # manejar 'importar StanMath como m;'
+        # manejar 'importar StanMath como m;' aliasss
         if ctx.ID(1) is not None:
             alias = ctx.ID(1).getText()
 
