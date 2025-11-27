@@ -1,7 +1,5 @@
-# librerias/StanDeep.py
 # Librería para Redes Neuronales Multicapa (Perceptrón Multicapa)
 # Usa StanMath internamente y está diseñada para ser simple y educativa
-
 from librerias.StanMath import StanMath
 from librerias.NumStan import NumStan
 
@@ -10,17 +8,7 @@ def custom_uniform(a, b):
     """Genera número aleatorio uniforme en [a, b) usando StanMath. random()"""
     return a + (b - a) * StanMath.random()
 
-# ============================
 #     FUNCIONES DE ACTIVACIÓN
-# ============================
-
-def custom_uniform(a, b):
-    """
-    Genera número aleatorio uniforme en [a, b) 
-    usando el generador congruencial lineal de StanMath
-    """
-    return a + (b - a) * StanMath.random()
-
 class ActivacionReLU:
     """ReLU: máximo entre 0 y x"""
     
@@ -56,9 +44,7 @@ class ActivacionLineal:
         return grad_output[:]
 
 
-# ============================
 #         CAPA DENSA
-# ============================
 
 class CapaDensa:
     """Capa completamente conectada"""
@@ -146,9 +132,7 @@ class CapaDensa:
         return grad_x
 
 
-# ============================
 #        FUNCIONES DE PÉRDIDA
-# ============================
 
 class ErrorCuadratico:
     """Mean Squared Error (MSE) - para regresión"""
@@ -183,10 +167,7 @@ class Entropia:
             grad.append((p - r) / (p * (1 - p)) / len(y_real))
         return grad
 
-
-# ============================
 #      OPTIMIZADOR BILL
-# ============================
 
 class Bill:
     """
@@ -281,9 +262,7 @@ class Bill:
         return params_actualizados
 
 
-# ============================
 #      RED NEURONAL MULTICAPA
-# ============================
 
 class PerceptronMulticapa:
     """Red Neuronal Multicapa (MLP)"""
@@ -406,9 +385,7 @@ class PerceptronMulticapa:
         return perdida_total / len(X)
 
 
-# ============================
 #     FUNCIONES DE UTILIDAD
-# ============================
 
 def mostrar(msg):
     """Mostrar mensaje (compatible con Deeper)"""
