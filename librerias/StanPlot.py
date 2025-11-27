@@ -14,7 +14,7 @@ except Exception:
     def predecir(xs, m, b):
         raise Exception("StanLearn no disponible.")
 
-# ---------- utilidades ----------
+# utilidades
 def _rgb_to_str(rgb):
     try:
         r, g, b = rgb
@@ -31,7 +31,7 @@ def _fmt_num(x):
     except Exception:
         return str(x)
 
-# ---------- primitivas ----------
+# primitivas
 class Punto:
     def __init__(self, x, y):
         self.x = x
@@ -77,7 +77,7 @@ class Canvas:
             ymin = getattr(g, "ymin", 0)
             ymax = getattr(g, "ymax", 1)
 
-            # evita división por cero
+            # evitar división por cero
             rango_x = (xmax - xmin) if (xmax - xmin) != 0 else 1.0
             rango_y = (ymax - ymin) if (ymax - ymin) != 0 else 1.0
 
@@ -106,7 +106,7 @@ class Canvas:
         svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}">\n{bg}\n{text_title}\n{text_x}\n{text_y}\n{ejes_svg}\n{content}\n</svg>'
         return svg
 
-# ---------- Grafica ----------
+# Grafica
 class Grafica:
     def __init__(self, titulo="", etiqueta_x="", etiqueta_y=""):
         self.titulo = titulo
@@ -150,7 +150,7 @@ class Grafica:
         py = (1.0 - pad) * h - ((y - self.ymin) / dy) * (h * (1.0 - 2.0 * pad))
         return Punto(px, py)
 
-# ---------- creadores ----------
+# creadores
 def crear_grafica_lineas(xs, ys, titulo="", ex="", ey=""):
     if not xs: xs = [0]
     if not ys: ys = [0]
@@ -232,7 +232,6 @@ def crear_grafica_barras(categorias, valores, titulo="", ex="", ey=""):
             f'<rect x="{_fmt_num(x)}" y="{_fmt_num(y)}" width="{_fmt_num(bar_width)}" height="{_fmt_num(height)}" fill="{fill}" />'
         )
 
-        # === SOLO PONER CATEGORÍAS SI EL USUARIO LAS PASÓ ===
         if categorias and idx < len(categorias):
             label = categorias[idx]
             g.canvas.agregar_elemento(
@@ -251,7 +250,7 @@ def guardar_grafica(grafica, ruta):
     with open(ruta, "w", encoding="utf-8") as f:
         f.write(svg)
 
-# ---------- intérprete (instancia) ----------
+# intérprete (instancia)
 class _StanPlotInterpreter:
     def __init__(self):
         self.current_graph = None
@@ -347,7 +346,7 @@ class _StanPlotInterpreter:
 # instancia del módulo
 StanPlot = _StanPlotInterpreter()
 
-# funciones de módulo (para llamar como: StanPlot.crear_lineas(...) o desde Deeper usar StanPlot.crear_lineas)
+# funciones de módulo
 def crear_lineas(xs, ys, titulo="", ex="", ey=""):
     return StanPlot.crear_lineas(xs, ys, titulo, ex, ey)
 
