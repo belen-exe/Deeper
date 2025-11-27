@@ -38,10 +38,16 @@ def builtin_mostrar(*args):
     valores = [normalizar_valor(a) for a in args]
     print(*valores)
 
+# convierte a string
+def a_cadena(valor):
+    return str(valor)
+
+
 
 BUILTINS = {
     # Output
     "mostrar": builtin_mostrar,
+    "a_cadena": a_cadena,
 
     # Básicos
     "abs": StanMath.abs,
