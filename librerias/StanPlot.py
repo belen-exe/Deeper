@@ -1,3 +1,9 @@
+# librerias/StanPlot.py
+# StanPlot para Deeper (módulo importable)
+# - Usa StanMath y StanRegression
+# - Solo crea: lineas, barras (con etiquetas), dispersion, regresion
+# - SVG output, colores agradables por defecto
+
 from librerias.StanMath import StanMath
 
 # intentar importar StanRegression (debe existir)
@@ -281,30 +287,25 @@ class _StanPlotInterpreter:
         self.current_graph = g
         return g
 
-    def crear_regresion(self, xs, ys, titulo="", ex="", ey=""):
-        # puntos
-        g_pts = crear_grafica_dispersion(xs, ys, titulo, ex, ey)
-        # regresión con la librería StanRegression
+    def crear_regresion(self, xs, ys, titulo="", eje_x="", eje_y=""):
+        # usar StanLearn
         m = regresion_pendiente(xs, ys)
         b = regresion_intercepto(xs, ys)
-        preds = predecir(xs, m, b)
-        # línea de regresión
-        g_line = crear_grafica_lineas(xs, preds, titulo, ex, ey)
-        # ajustar estilos: línea roja por defecto, puntos azules
-        g_line.color_linea = (200, 50, 50)
-        g_pts.color_puntos = (30, 90, 200)
-        # combinar: poner fragmentos de la línea encima del canvas de puntos
-        for frag in g_line.canvas.elementos:
-            g_pts.canvas.agregar_elemento(frag)
-        # anotar ecuación (opcional) en la esquina superior izquierda
-        try:
-            eq = f"y = {_fmt_num(m)}x + {_fmt_num(b)}"
-            g_pts.canvas.agregar_elemento(f'<text x="70" y="45" font-size="12" fill="black">{eq}</text>')
-        except Exception:
-            pass
-        self._apply_previous_styles(g_pts)
-        self.current_graph = g_pts
-        return g_pts
+        pred = predecir(xs, m, b)
+
+        # 1) nube de puntos
+        disp = crear_grafica_dispersion(xs, ys, titulo, eje_x, eje_y)
+        
+        # 2) línea ajustada (hereda color de puntos o línea actual)
+        linea = crear_grafica_lineas(xs, pred, titulo, eje_x, eje_y)
+
+        # heredar color/estilo si ya existía config previa
+        linea.color_linea = disp.color_linea
+        linea.color_puntos = disp.color_puntos
+        linea.canvas.color_fondo = disp.canvas.color_fondo
+        
+        self.current_graph = linea
+        return linea
 
     # estilos
     def color_linea(self, r, g, b):
