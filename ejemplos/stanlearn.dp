@@ -1,0 +1,70 @@
+// ---------------------------
+// Importar
+// ---------------------------
+importar StanLearn como SL;
+
+
+// ===========================
+// 1) REGRESIÓN LINEAL
+// ===========================
+mostrar("\n==== REGRESIÓN LINEAL ====");
+lista x  = [1, 2, 3, 4, 5];
+lista y  = [1, 3, 2, 5, 4];
+
+decimal m = SL.regresion_pendiente(x, y);
+decimal b = SL.regresion_intercepto(x, y);
+mostrar("pendiente m =", m);
+mostrar("intercepto b =", b);
+
+lista pred = SL.predecir(x, m, b);
+mostrar("predicciones =", pred);
+
+
+// ===========================
+// 2) REGRESIÓN LOGÍSTICA
+// ===========================
+mostrar("\n==== REGRESIÓN LOGÍSTICA ====");
+lista Xlog = [[1],[2],[3],[4],[5]];
+lista Ylog = [0,0,0,1,1];
+
+lista modelo = SL.logistic_train(Xlog, Ylog);
+mostrar("modelo (w,b) =", modelo);
+
+decimal prob = SL.logistic_predict_proba([[4.5]], modelo[0], modelo[1])[0];
+mostrar("probabilidad clase=1 para x=4.5 =", prob);
+
+
+// ===========================
+// 3) PERCEPTRÓN
+// ===========================
+mostrar("\n==== PERCEPTRÓN ====");
+lista Xp = [[0,0],[0,1],[1,0],[1,1]];
+lista Yp = [0,0,0,1];
+
+lista perc = SL.perceptron_train(Xp, Yp);
+mostrar("modelo perceptrón (w,b) =", perc);
+
+lista preds_p = SL.perceptron_predict(Xp, perc[0], perc[1]);
+mostrar("predicciones XOR (aprox) =", preds_p);
+
+
+// ===========================
+// 4) K-MEANS
+// ===========================
+mostrar("\n==== K-MEANS ====");
+lista Xk = [[1,1],[2,2],[8,8],[9,9]];
+lista km = SL.kmeans_wrapper(Xk, 2);
+
+mostrar("centroides =", km[0]);
+mostrar("labels =", km[1]);
+
+
+// ===========================
+// 5) K-NN
+// ===========================
+mostrar("\n==== K-NN ====");
+lista Xtrain = [[1,1],[2,2],[8,8],[9,9]];
+lista Ytrain = [0,0,1,1];
+
+entero clas = SL.knn_wrapper(Xtrain, Ytrain, [2,2], 3);
+mostrar("Clase predicha para [2,2] =", clas);
