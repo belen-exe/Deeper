@@ -14,10 +14,6 @@ class StanMath:
 
     @staticmethod
     def random():
-        """
-        Genera un número pseudoaleatorio uniforme en [0,1)
-        usando un generador congruencial lineal (LCG).
-        """
         # Parámetros clásicos del LCG
         a = 1664525
         c = 1013904223
@@ -34,7 +30,7 @@ class StanMath:
         r = StanMath.random()
         return int(a + (b - a + 1) * r)
 
-    # ---------- utilidades internas ----------
+    # utilidades internas
     @staticmethod
     def _factorial_int(n: int) -> int:
         if n < 0:
@@ -48,7 +44,7 @@ class StanMath:
     def _abs(x):
         return x if x >= 0 else -x
 
-    # ---------- módulo ----------
+    # módulo
     @staticmethod
     def mod(a, b):
         if b == 0:
@@ -67,22 +63,22 @@ class StanMath:
             x += StanMath.TAU
         return x
 
-    # ---------- valor absoluto ----------
+    # valor absoluto
     @staticmethod
     def abs(x):
         return StanMath._abs(x)
 
-    # ---------- truncar ----------
+    # truncar
     @staticmethod
     def truncar(x):
         return int(x) if x >= 0 else -int(-x)
 
-    # ---------- potencia ----------
+    # potencia
     @staticmethod
     def elevado(x, y):
         return x ** y
 
-    # ---------- exponencial ----------
+    # exponencial
     @staticmethod
     def exp(x, terms=60):
         result = 1.0
@@ -94,7 +90,7 @@ class StanMath:
             result += numer / denom
         return result
 
-    # ---------- log natural ----------
+    # log natural
     @staticmethod
     def log(x, iterations=40):
         if x <= 0:
@@ -124,7 +120,7 @@ class StanMath:
     def log2(x):
         return StanMath.log(x) / StanMath.log(2.0)
 
-    # ---------- trigonometría ----------
+    # trigonometría
     @staticmethod
     def sin(x, terms=30):
         x = StanMath._normalize_angle(x)
@@ -160,7 +156,7 @@ class StanMath:
             return float('inf') if StanMath.sin(x) >= 0 else float('-inf')
         return StanMath.sin(x) / c
 
-    # ---------- trigonometría inversa ----------
+    # trigonometría inversa
     @staticmethod
     def asin(x, iterations=40):
         if x < -1 or x > 1:
@@ -191,7 +187,7 @@ class StanMath:
             y -= (s / c - x) * denom
         return y
 
-    # ---------- conversión ----------
+    # conversión
     @staticmethod
     def grados(x):
         return x * 180.0 / StanMath.PI
@@ -200,7 +196,7 @@ class StanMath:
     def radianes(x):
         return x * StanMath.PI / 180.0
 
-    # ---------- raiz ----------
+    # raiz
     @staticmethod
     def raiz(x, iterations=50):
         if x < 0:
@@ -213,7 +209,7 @@ class StanMath:
             y = 0.5 * (y + x / y)
         return y
 
-    # ---------- combinatoria ----------
+    # combinatoria
     @staticmethod
     def factorial(n):
         if not isinstance(n, int):
@@ -260,7 +256,7 @@ class StanMath:
             res *= i
         return res
 
-    # ---------- min / max ----------
+    # min / max
     @staticmethod
     def min(a, b):
         return a if a <= b else b
