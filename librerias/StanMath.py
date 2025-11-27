@@ -4,6 +4,36 @@ class StanMath:
     E  = 2.718281828459045
     TAU = 2 * PI
 
+    # ---------- RNG interno (LCG) ----------
+    _rand_seed = 123456789  # valor por defecto
+
+    @staticmethod
+    def semilla(s):
+        """Establece la semilla del generador."""
+        StanMath._rand_seed = int(s) & 0xFFFFFFFF
+
+    @staticmethod
+    def random():
+        """
+        Genera un número pseudoaleatorio uniforme en [0,1)
+        usando un generador congruencial lineal (LCG).
+        """
+        # Parámetros clásicos del LCG
+        a = 1664525
+        c = 1013904223
+        m = 2**32
+
+        StanMath._rand_seed = (a * StanMath._rand_seed + c) % m
+        return StanMath._rand_seed / m
+
+    @staticmethod
+    def randint(a, b):
+        """Retorna un entero aleatorio entre a y b (incluidos)."""
+        if a > b:
+            raise ValueError("randint: a debe ser <= b")
+        r = StanMath.random()
+        return int(a + (b - a + 1) * r)
+
     # ---------- utilidades internas ----------
     @staticmethod
     def _factorial_int(n: int) -> int:
@@ -18,19 +48,14 @@ class StanMath:
     def _abs(x):
         return x if x >= 0 else -x
 
-        # ---------- módulo ----------
+    # ---------- módulo ----------
     @staticmethod
     def mod(a, b):
         if b == 0:
             raise ValueError("mod: el divisor no puede ser cero")
-
-        # Permitir flotantes que representen enteros
         if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
             raise ValueError("mod: los valores deben ser numéricos")
-
-        # Implementación consistente con Python
         return a % b
-
 
     @staticmethod
     def _normalize_angle(x):
@@ -163,7 +188,6 @@ class StanMath:
             denom = c * c
             if denom == 0:
                 break
-            # CORRECCIÓN AQUÍ:
             y -= (s / c - x) * denom
         return y
 
