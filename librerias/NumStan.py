@@ -1,3 +1,5 @@
+from librerias.StanMath import StanMath
+
 class NumStan:
 
     @staticmethod
@@ -258,10 +260,8 @@ class NumStan:
     # pesos
     @staticmethod
     def random_weights(filas, cols, rango=0.5):
-        #Genera matriz de pesos aleatorios entre -rango y +rango.
-
-        import random
-        return [[random.uniform(-rango, rango) for _ in range(cols)] for _ in range(filas)]
+        """Genera matriz de pesos aleatorios entre -rango y +rango."""
+        return [[StanMath.random() * 2 * rango - rango for _ in range(cols)] for _ in range(filas)]
 
     @staticmethod
     def xavier_init(n_in, n_out):
@@ -271,9 +271,8 @@ class NumStan:
         
         Recomendado para: sigmoid y tanh
         """
-        import random
         limite = (6.0 / (n_in + n_out)) ** 0.5
-        return [[random.uniform(-limite, limite) for _ in range(n_out)] for _ in range(n_in)]
+        return [[StanMath.random() * 2 * limite - limite for _ in range(n_out)] for _ in range(n_in)]
 
     @staticmethod
     def he_init(n_in, n_out):
@@ -283,9 +282,8 @@ class NumStan:
         
         Recomendado para: ReLU
         """
-        import random
         limite = (6.0 / n_in) ** 0.5
-        return [[random.uniform(-limite, limite) for _ in range(n_out)] for _ in range(n_in)]
+        return [[StanMath.random() * 2 * limite - limite for _ in range(n_out)] for _ in range(n_in)]
 
     @staticmethod
     def zeros(filas, cols):
