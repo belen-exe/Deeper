@@ -1,0 +1,17 @@
+importar StanLearn como sl;
+
+// Datos de entrenamiento (X_train, y_train)
+lista X = [
+    [1, 1],
+    [1, 2],
+    [4, 4],
+    [5, 5]
+];
+
+lista y = [0, 0, 1, 1];
+
+lista query = [2, 2];
+
+entero clase = sl.knn_wrapper(X, y, query, 3);
+mostrar("Clase predicha para [2,2] =", clase);
+
