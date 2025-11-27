@@ -74,13 +74,13 @@ class NumStan:
 
     @staticmethod
     def transpuesta(A):
-        """Transpuesta de una matriz: filas ↔ columnas"""
+        # Transpuesta de una matriz: filas ↔ columnas
         filas, cols = NumStan.shape(A)
         return [[A[i][j] for i in range(filas)] for j in range(cols)]
 
     @staticmethod
     def inversa(A):
-        """Calcula la inversa de una matriz cuadrada usando Gauss-Jordan"""
+        # Calcula la inversa de una matriz cuadrada usando Gauss-Jordan
         if not NumStan.es_cuadrada(A):
             raise ValueError("inversa: la matriz no es cuadrada")
 
@@ -121,7 +121,7 @@ class NumStan:
 
     @staticmethod
     def escalar(A, k):
-        """Multiplica una matriz por un escalar: k × A"""
+        # Multiplica una matriz por un escalar: k × A
         filas, cols = NumStan.shape(A)
         return [[A[i][j] * k for j in range(cols)] for i in range(filas)]
 
@@ -135,7 +135,7 @@ class NumStan:
 
     @staticmethod
     def mat_vec(A, v):
-        """Multiplicación matriz-vector: A × v"""
+        # Multiplicación matriz-vector: A × v
         filas, cols = NumStan.shape(A)
 
         if len(v) != cols:
@@ -260,34 +260,22 @@ class NumStan:
     # pesos
     @staticmethod
     def random_weights(filas, cols, rango=0.5):
-        """Genera matriz de pesos aleatorios entre -rango y +rango."""
+        # Genera matriz de pesos aleatorios entre -rango y +rango
         return [[StanMath.random() * 2 * rango - rango for _ in range(cols)] for _ in range(filas)]
 
     @staticmethod
     def xavier_init(n_in, n_out):
-        """
-        Inicialización Xavier/Glorot.
-        Rango: ±sqrt(6 / (n_in + n_out))
-        
-        Recomendado para: sigmoid y tanh
-        """
         limite = (6.0 / (n_in + n_out)) ** 0.5
         return [[StanMath.random() * 2 * limite - limite for _ in range(n_out)] for _ in range(n_in)]
 
     @staticmethod
     def he_init(n_in, n_out):
-        """
-        Inicialización He.
-        Rango: ±sqrt(6 / n_in)
-        
-        Recomendado para: ReLU
-        """
         limite = (6.0 / n_in) ** 0.5
         return [[StanMath.random() * 2 * limite - limite for _ in range(n_out)] for _ in range(n_in)]
 
     @staticmethod
     def zeros(filas, cols):
-        """Matriz de ceros - útil para inicializar biases"""
+        # Matriz de ceros - útil para inicializar biases
         return [[0.0 for _ in range(cols)] for _ in range(filas)]
 
     # métricas de regresión
