@@ -172,7 +172,7 @@ def perceptron_predict(X, w, b):
         res.append(1 if (_dot(w, xi) + b) >= 0 else 0)
     return res
 
-# ---------------- K-MEANS ----------------
+# K-MEANS
 def kmeans(X, k=2, max_iter=100):
     """
     K-means básico.
