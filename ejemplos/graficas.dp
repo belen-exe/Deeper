@@ -9,9 +9,8 @@ StanPlot.color_puntos(10, 10, 200);
 StanPlot.titulo("Gráfica de Lineas");
 StanPlot.guardar("lineas.svg");
 
-lista categorias = ["A", "B", "C", "D", "E"];
 lista valores = [20, 10, 30, 15, 8];
 
-StanPlot.crear_barras(categorias, valores, "Ventas", "Producto", "Cantidad");
+StanPlot.crear_barras([], valores, "Ventas", "Producto", "Cantidad");
 StanPlot.color_barras(50, 100, 200);
 StanPlot.guardar("barras.svg");
