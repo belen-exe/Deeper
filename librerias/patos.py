@@ -1,24 +1,18 @@
 from runtime.excepciones import DeeperError
 
 class PatosFrame:
-    """DataFrame simple para Deeper - similar a pandas"""
-
     def __init__(self, columnas, datos):
         # columnas: lista de strings
         # datos: lista de diccionarios (registros)
         self._cols = columnas
         self._data = datos
 
-    # ============================
-    #     MÉTODOS BÁSICOS
-    # ============================
-
     def columnas(self):
-        """Retorna la lista de nombres de columnas"""
+        # Retorna la lista de nombres de columnas
         return self._cols[:]
 
     def seleccionar(self, columnas):
-        """Selecciona un subconjunto de columnas"""
+        # Selecciona un subconjunto de columnas
         for c in columnas:
             if c not in self._cols:
                 raise DeeperError(f"La columna '{c}' no existe")
@@ -30,7 +24,7 @@ class PatosFrame:
         return PatosFrame(columnas[:], datos_nuevos)
 
     def filtrar(self, funcion):
-        """Filtra filas usando una función que retorna bool"""
+        # Filtra filas usando una función que retorna bool
         datos_nuevos = []
         for fila in self._data:
             try:
@@ -42,7 +36,7 @@ class PatosFrame:
         return PatosFrame(self._cols[:], datos_nuevos)
 
     def reemplazar(self, col, viejo, nuevo):
-        """Reemplaza valores en una columna"""
+        # Reemplaza valores en una columna
         if col not in self._cols:
             raise DeeperError(f"La columna '{col}' no existe")
         
@@ -53,7 +47,7 @@ class PatosFrame:
         return self
 
     def llenar_na(self, col, valor):
-        """Rellena valores None con un valor dado"""
+        # Rellena valores None con un valor dado
         if col not in self._cols:
             raise DeeperError(f"La columna '{col}' no existe")
         
@@ -63,12 +57,8 @@ class PatosFrame:
         
         return self
 
-    # ============================
-    #    DETECCIÓN AUTOMÁTICA
-    # ============================
-
     def detectar_tipos(self):
-        """Detecta si cada columna es numérica o categórica"""
+        # Detecta si cada columna es numérica o categórica
         tipos = {}
 
         for col in self._cols:
@@ -88,12 +78,8 @@ class PatosFrame:
 
         return tipos
 
-    # ======================================
-    #    CONVERSIÓN PARA REDES NEURONALES
-    # ======================================
-
     def to_matriz(self, columnas):
-        """Convierte columnas seleccionadas a matriz (lista de listas)"""
+        # Convierte columnas seleccionadas a matriz (lista de listas)
         for c in columnas:
             if c not in self._cols:
                 raise DeeperError(f"La columna '{c}' no existe")
@@ -105,18 +91,14 @@ class PatosFrame:
         return matriz
 
     def to_etiqueta(self, columna):
-        """Extrae una columna como lista (para labels/etiquetas)"""
+        # Extrae una columna como lista (para labels/etiquetas)
         if columna not in self._cols:
             raise DeeperError(f"La columna '{columna}' no existe")
         
         return [fila[columna] for fila in self._data]
 
-    # ============================
-    #       GUARDAR CSV
-    # ============================
-
     def guardar_csv(self, ruta):
-        """Guarda el DataFrame como CSV"""
+        # Guarda el DataFrame como CSV
         try:
             with open(ruta, "w", encoding="utf-8") as f:
                 # escribir encabezados
@@ -137,13 +119,8 @@ class PatosFrame:
         except Exception as e:
             raise DeeperError(f"No se pudo guardar CSV: {e}")
 
-
-# ============================
-#       LECTURA CSV
-# ============================
-
 def leer_csv(ruta):
-    """Lee un archivo CSV y retorna un PatosFrame"""
+    # Lee un archivo CSV y retorna un PatosFrame
     try:
         with open(ruta, "r", encoding="utf-8") as f:
             lineas = f.read().strip().split("\n")
@@ -184,13 +161,8 @@ def leer_csv(ruta):
 
     return PatosFrame(columnas, datos)
 
-
-# ============================
-#     DIVISIÓN DE ENTRENAMIENTO
-# ============================
-
 def div_entreno(X, y, porcentaje):
-    """Divide datos en conjunto de entrenamiento y prueba"""
+    # Divide datos en conjunto de entrenamiento y prueba
     if porcentaje <= 0 or porcentaje >= 1:
         raise DeeperError("El porcentaje debe estar entre 0 y 1")
 
