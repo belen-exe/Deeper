@@ -1,0 +1,27 @@
+importar StanMath como m;
+importar StanPlot como p;
+
+lista x_valores = [];
+lista y_valores = [];
+
+decimal rango_inicio = -2 * m.PI;
+decimal rango_fin = 2 * m.PI;
+entero num_puntos = 100;
+
+entero i = 0;
+mientras i < num_puntos:
+    decimal x = rango_inicio + (i * (rango_fin - rango_inicio) / (num_puntos - 1));
+    decimal y = m.sin(x);
+
+    x_valores = x_valores + [x];
+    y_valores = y_valores + [y];
+
+    i = i + 1;
+fin
+
+p.crear_lineas(x_valores, y_valores, "Función Seno", "x", "sin(x)");
+
+p.guardar("seno.svg");
+
+mostrar("Gráfica generada: seno.svg");
+
